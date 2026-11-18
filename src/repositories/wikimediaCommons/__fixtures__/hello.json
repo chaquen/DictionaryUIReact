@@ -1,0 +1,76 @@
+{
+  "batchcomplete": true,
+  "query": {
+    "pages": [
+      {
+        "pageid": 268421,
+        "ns": 6,
+        "title": "File:En-us-hello.ogg",
+        "imagerepository": "local",
+        "videoinfo": [
+          {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/5/52/En-us-hello.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:En-us-hello.ogg",
+            "descriptionshorturl": "https://commons.wikimedia.org/wiki/Special:Redirect/page/268421",
+            "derivatives": [
+              {
+                "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/5/52/En-us-hello.ogg/En-us-hello.ogg.mp3",
+                "type": "audio/mpeg",
+                "transcodekey": "mp3",
+                "width": 0,
+                "height": 0,
+                "bandwidth": 150424
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pageid": 9021983,
+        "ns": 6,
+        "title": "File:En-uk-hello.ogg",
+        "imagerepository": "local",
+        "videoinfo": [
+          {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/4/48/En-uk-hello.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:En-uk-hello.ogg",
+            "descriptionshorturl": "https://commons.wikimedia.org/wiki/Special:Redirect/page/9021983",
+            "derivatives": [
+              {
+                "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/4/48/En-uk-hello.ogg/En-uk-hello.ogg.mp3",
+                "type": "audio/mpeg",
+                "transcodekey": "mp3",
+                "width": 0,
+                "height": 0,
+                "bandwidth": 134544
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pageid": 75797336,
+        "ns": 6,
+        "title": "File:En-au-hello.ogg",
+        "imagerepository": "local",
+        "videoinfo": [
+          {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/e/e9/En-au-hello.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:En-au-hello.ogg",
+            "descriptionshorturl": "https://commons.wikimedia.org/wiki/Special:Redirect/page/75797336",
+            "derivatives": [
+              {
+                "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/e/e9/En-au-hello.ogg/En-au-hello.ogg.mp3",
+                "type": "audio/mpeg",
+                "transcodekey": "mp3",
+                "width": 0,
+                "height": 0,
+                "bandwidth": 159184
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
