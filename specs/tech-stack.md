@@ -24,8 +24,8 @@
 
 - Base de datos: ninguna; colección del usuario en `localStorage`
 - APIs externas: Free Dictionary API (definiciones), Wikimedia Commons API (grabaciones de pronunciación)
-- Deploy: Vercel (sitio estático) — se configura en HU-001
-- CI/CD: GitHub Actions — se configura en HU-001
+- Deploy: Vercel (integración GitHub): producción en https://dictionary-ui-react.vercel.app desde `master`, y una vista previa por PR
+- CI/CD: GitHub Actions, `.github/workflows/ci.yml`, job `validate`, con Node según `.nvmrc` (22) y pnpm según `packageManager` (11.1.2)
 - Repositorio: GitHub `chaquen/DictionaryUIReact`, rama principal `master`
 
 ## Herramientas de desarrollo
