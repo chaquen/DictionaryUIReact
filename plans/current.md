@@ -70,12 +70,19 @@ el enlace a la app publicada, para saber si el proyecto está sano y dónde prob
 
 ## Criterios de aceptación
 <!-- Condiciones verificables. Si no son verificables, no son criterios. -->
-- [ ] El 100 % de los PR hacia `master` muestran el resultado de la validación antes de poder fusionarse.
-- [ ] Un PR con una prueba fallida queda marcado como fallido.
-- [ ] Un merge a `master` con la validación aprobada está visible en producción en menos de 5 minutos, sin pasos manuales.
-- [ ] Un cambio con la validación fallida nunca llega a producción.
-- [ ] La validación de un PR termina en menos de 5 minutos.
-- [ ] No hay tokens ni credenciales en el repositorio.
+- [x] AC1 — El 100 % de los PR hacia `master` muestran el resultado de la validación antes de poder fusionarse.
+  Evidencia: PR #2 y PR #3 muestran el check `validate`.
+- [x] AC2 — Un PR con una prueba fallida queda marcado como fallido.
+  Evidencia: PR #3 (temporal) — `validate` en rojo: "expected 'hello' to be 'hello-broken-on-purpose'" (1 fallida, 38 aprobadas).
+- [ ] AC3 — Un merge a `master` con la validación aprobada está visible en producción en menos de 5 minutos, sin pasos manuales.
+  Pendiente: se mide al fusionar el PR #2.
+- [x] AC4 — Un cambio con la validación fallida nunca llega a producción.
+  Evidencia: PR #3 con `mergeStateStatus: BLOCKED` por el ruleset sin bypass; se cerró sin fusionar.
+  No se intentó forzar el merge, para no arriesgar producción.
+- [x] AC5 — La validación de un PR termina en menos de 5 minutos.
+  Evidencia: 19 s, 21 s y 41 s en las tres ejecuciones.
+- [x] AC6 — No hay tokens ni credenciales en el repositorio.
+  Evidencia: `git grep` de patrones de token, secreto, clave o contraseña sin resultados; la integración de Vercel no usa secretos en GitHub.
 
 ### Criterios de éxito
 - El desarrollador puede saber si un PR es seguro de fusionar sin ejecutar nada en local.
@@ -186,7 +193,8 @@ el enlace a la app publicada, para saber si el proyecto está sano y dónde prob
 - [x] [T-004] [US-002] [US-003] (Humano, H1) Importar el repositorio en Vercel
   Done cuando: el PR muestra la URL de vista previa y existe la URL de producción de `master`.
   Evidencia: el humano importó el repo; producción en https://dictionary-ui-react.vercel.app responde 200 y una búsqueda real
-  ("hello") muestra resultados en 718 ms. La vista previa del PR se verifica en T-007 (Vercel despliega desde el siguiente push).
+  ("hello") muestra resultados en 718 ms. El PR #2 muestra el check "Vercel" en verde y un comentario con la URL de vista previa
+  (protegida con inicio de sesión de Vercel).
 - [x] [T-005] [US-002] (Humano, H2, o el agente con permiso explícito) Protección de rama en `master`
   Done cuando: un PR con `validate` en rojo no se puede fusionar, ni siquiera por administradores.
   Evidencia: ruleset "master protection" (id 27571303), activo y sin bypass, configurado por el agente con `gh api` y con permiso del humano:
@@ -200,6 +208,7 @@ el enlace a la app publicada, para saber si el proyecto está sano y dónde prob
 ### Polish
 - [ ] [T-007] Verificación end-to-end de los criterios de aceptación
   Done cuando: AC1–AC6 marcados con evidencia (PR temporal con test roto cerrado sin fusionar, tiempos medidos).
+  Estado: AC1, AC2, AC4, AC5 y AC6 verificados; AC3 se verifica al fusionar el PR #2.
 
 Total tareas: 7
 Paralelizables: 2 (T-001, T-002)
@@ -227,5 +236,6 @@ MVP mínimo: T-001, T-002, T-003 (validación de PR funcionando end-to-end)
 | Acciones en sus últimas versiones mayores: `actions/checkout@v7`, `actions/setup-node@v7`, `pnpm/action-setup@v6` | Versiones anteriores (v4) | Runtime de Node vigente en los runners |
 | La versión de pnpm se toma de `packageManager` y la de Node de `.nvmrc` | Fijarlas dentro del workflow | Una sola fuente de verdad para local, CI y Corepack |
 | La protección de rama se documenta como *ruleset* de GitHub | Regla clásica de *branch protection* | Los rulesets son el mecanismo actual y permiten bloquear el bypass a administradores |
+| Las vistas previas de Vercel quedan protegidas con Vercel Authentication (valor por defecto) | Hacerlas públicas | Solo los miembros del equipo de Vercel pueden abrirlas; la URL aparece en el PR (US-003) |
 | Ruleset con 0 aprobaciones de revisión requeridas | Exigir 1 aprobación | Proyecto de un solo desarrollador: con 1 aprobación nadie podría fusionar sus propios PR |
 | T-001/T-002 verificados con Node 22.23.5 en local: 39 tests y build OK, lockfile sin cambios | — | Evidencia del "Done cuando" |
