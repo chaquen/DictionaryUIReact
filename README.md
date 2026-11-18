@@ -1,6 +1,10 @@
 # Dictionary UI (React)
 
+[![CI](https://github.com/chaquen/DictionaryUIReact/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/chaquen/DictionaryUIReact/actions/workflows/ci.yml)
+
 Diccionario de inglés: busca palabras, escucha su pronunciación y guarda tu propia colección.
+
+**App publicada:** https://dictionary-ui-react.vercel.app
 
 - **Search**: definiciones agrupadas por categoría gramatical, ejemplos de uso, sinónimos y antónimos.
 - **My words**: colección personal guardada en el navegador (sobrevive a recargas).
@@ -16,8 +20,8 @@ Datos: [Free Dictionary API](https://dictionaryapi.dev) (gratuita, sin clave) + 
 
 ## Requisitos
 
-- Node.js 20.19+ o 22.12+ (probado con Node 24)
-- pnpm (el lockfile es `pnpm-lock.yaml`)
+- Node.js 20.19+ o 22.12+ (CI y Vercel usan la versión de `.nvmrc`: 22)
+- pnpm 11 (fijado en `package.json` → `packageManager`; el lockfile es `pnpm-lock.yaml`)
 
 ## Uso
 
@@ -33,6 +37,24 @@ Variables opcionales (copiar `.env.example` a `.env`):
 | Variable | Descripción |
 | --- | --- |
 | `VITE_DICTIONARY_API_URL` | URL base de la API. Por defecto `https://api.dictionaryapi.dev/api/v2/entries/en` |
+
+## CI/CD
+
+- **CI** — [`.github/workflows/ci.yml`](.github/workflows/ci.yml): en cada PR hacia `master` y en cada push a `master`
+  ejecuta `pnpm install --frozen-lockfile`, `pnpm test:run` y `pnpm build` (job `validate`).
+- **CD** — integración GitHub de Vercel: cada PR recibe una URL de vista previa y cada merge a `master` se publica
+  en producción (https://dictionary-ui-react.vercel.app).
+- **Protección de rama** — `master` solo acepta cambios por PR con `validate` en verde.
+
+### Configuración inicial (una sola vez, la hace el dueño del repositorio)
+
+1. **Vercel:** en [vercel.com/new](https://vercel.com/new) importa `chaquen/DictionaryUIReact`.
+   Vercel detecta Vite (build `pnpm build`, salida `dist`). En *Settings → Build and Deployment* deja Node.js en **22.x**.
+   Si la instalación falla por la versión de pnpm, agrega la variable de entorno `ENABLE_EXPERIMENTAL_COREPACK=1`.
+2. **Protección de rama:** en GitHub, *Settings → Rules → Rulesets → New branch ruleset*:
+   - Target: rama `master`; Enforcement: *Active*; sin *bypass list*.
+   - Activa *Require a pull request before merging* y *Require status checks to pass* con el check `validate`.
+   - Activa *Block force pushes*.
 
 ## Arquitectura: patrón repositorio
 
