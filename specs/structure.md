@@ -49,3 +49,4 @@ DictionaryUIReact/
 - Dev: `pnpm dev` (http://localhost:5173)
 - Test: `pnpm test:run`
 - Prod: `pnpm build` → `dist/` servido como sitio estático en Vercel
+- CI: `.github/workflows/ci.yml`

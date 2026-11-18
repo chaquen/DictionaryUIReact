@@ -23,6 +23,7 @@ colección personal.
 - Estilo: componentes `.jsx` en PascalCase, hooks `useX`, adaptadores `createXRepository`; textos de UI en inglés.
 - Tests: Vitest + Testing Library, junto al archivo probado (`*.test.js[x]`); fixtures reales en `__fixtures__/`.
 - Commits: Conventional Commits en inglés (`feat:`, `fix:`, `ci:`…), sin co-autor de IA; una rama por feature y PR hacia `master`.
+  `master` está protegida: solo entran cambios por PR con `validate` en verde; no se hace push directo.
 
 ## Restricciones conocidas
 <!-- Deuda técnica, limitaciones de infraestructura, dependencias críticas. -->
@@ -30,6 +31,7 @@ colección personal.
 - La colección vive solo en el `localStorage` del navegador: no se sincroniza entre dispositivos.
 - No hay linter ni formatter configurados.
 - Las APIs de terceros no garantizan disponibilidad (sin SLA).
+- Las vistas previas de Vercel requieren iniciar sesión en Vercel.
 
 ## Decisiones de arquitectura (ADRs)
 <!-- Registro de decisiones importantes y su justificación. Nunca borrar — solo marcar como obsoleto. -->
@@ -40,6 +42,7 @@ colección personal.
 | 2026-11-18 | Audio humano desde Wikimedia Commons (decorador `withPronunciation`) | Grabaciones de la API caídas y la voz sintética suena robótica | activo |
 | 2026-11-18 | Migrar Create React App → Vite + Vitest | CRA sin mantenimiento | activo |
 | 2026-11-18 | Colección en `localStorage` | No hay backend propio | activo |
+| 2026-11-18 | CI con GitHub Actions (job `validate`) + CD con la integración GitHub de Vercel + ruleset en `master` sin bypass | Validar cada PR sin guardar secretos en GitHub y publicar sin pasos manuales (HU-001) | activo |
 
 ## Lo que este proyecto NO hace
 <!-- Scope negativo explícito. Evita scope creep. -->
