@@ -7,7 +7,7 @@ describe('mapEntriesToWord', () => {
   it('maps a single entry into the domain model', () => {
     const word = mapEntriesToWord(hello);
 
-    expect(word.word).toBe('hello');
+    expect(word.word).toBe('hello-broken-on-purpose');
     expect(word.phonetic).toBe('/həˈləʊ/');
     expect(word.audioUrl).toMatch(/hello-au\.mp3$/);
     expect(word.meanings.map((m) => m.partOfSpeech)).toEqual(['noun', 'verb', 'interjection']);
