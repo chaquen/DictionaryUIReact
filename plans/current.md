@@ -178,20 +178,24 @@ el enlace a la app publicada, para saber si el proyecto está sano y dónde prob
   Done cuando: `pnpm install --frozen-lockfile` termina sin modificar `pnpm-lock.yaml`.
 
 ### US-001 — Validación de PR (P1)
-- [ ] [T-003] [US-001] Crear el workflow de validación — `.github/workflows/ci.yml`
+- [x] [T-003] [US-001] Crear el workflow de validación — `.github/workflows/ci.yml`
   Done cuando: el YAML es válido y, en el PR de esta HU, el check `validate` ejecuta tests y build en verde.
-  Estado: workflow escrito; falta verlo en verde en el PR (no hubo validador de YAML disponible en local).
+  Evidencia: PR #2 — check `validate` en verde en 19 s (run 44367091528, 2026-11-18).
 
 ### US-002 / US-003 — Publicación y vistas previas (P1 / P2) — pasos humanos
-- [ ] [T-004] [US-002] [US-003] (Humano, H1) Importar el repositorio en Vercel
+- [x] [T-004] [US-002] [US-003] (Humano, H1) Importar el repositorio en Vercel
   Done cuando: el PR muestra la URL de vista previa y existe la URL de producción de `master`.
-- [ ] [T-005] [US-002] (Humano, H2, o el agente con permiso explícito) Protección de rama en `master`
+  Evidencia: el humano importó el repo; producción en https://dictionary-ui-react.vercel.app responde 200 y una búsqueda real
+  ("hello") muestra resultados en 718 ms. La vista previa del PR se verifica en T-007 (Vercel despliega desde el siguiente push).
+- [x] [T-005] [US-002] (Humano, H2, o el agente con permiso explícito) Protección de rama en `master`
   Done cuando: un PR con `validate` en rojo no se puede fusionar, ni siquiera por administradores.
+  Evidencia: ruleset "master protection" (id 27571303), activo y sin bypass, configurado por el agente con `gh api` y con permiso del humano:
+  exige PR, check `validate` aprobado, bloquea force push y borrado de `master`. La prueba de bloqueo con un test roto queda en T-007.
 
 ### US-004 — Estado visible en el README (P3)
-- [ ] [T-006] [US-004] Badge, enlace a producción y sección CI/CD — `README.md`
+- [x] [T-006] [US-004] Badge, enlace a producción y sección CI/CD — `README.md`
   Done cuando: el README muestra el badge del workflow, el enlace a producción y los pasos H1/H2.
-  Estado: badge y pasos H1/H2 agregados; falta el enlace a producción (depende de T-004).
+  Evidencia: badge, enlace a producción y pasos H1/H2 en el README.
 
 ### Polish
 - [ ] [T-007] Verificación end-to-end de los criterios de aceptación
@@ -223,4 +227,5 @@ MVP mínimo: T-001, T-002, T-003 (validación de PR funcionando end-to-end)
 | Acciones en sus últimas versiones mayores: `actions/checkout@v7`, `actions/setup-node@v7`, `pnpm/action-setup@v6` | Versiones anteriores (v4) | Runtime de Node vigente en los runners |
 | La versión de pnpm se toma de `packageManager` y la de Node de `.nvmrc` | Fijarlas dentro del workflow | Una sola fuente de verdad para local, CI y Corepack |
 | La protección de rama se documenta como *ruleset* de GitHub | Regla clásica de *branch protection* | Los rulesets son el mecanismo actual y permiten bloquear el bypass a administradores |
+| Ruleset con 0 aprobaciones de revisión requeridas | Exigir 1 aprobación | Proyecto de un solo desarrollador: con 1 aprobación nadie podría fusionar sus propios PR |
 | T-001/T-002 verificados con Node 22.23.5 en local: 39 tests y build OK, lockfile sin cambios | — | Evidencia del "Done cuando" |

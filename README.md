@@ -4,6 +4,8 @@
 
 Diccionario de inglés: busca palabras, escucha su pronunciación y guarda tu propia colección.
 
+**App publicada:** https://dictionary-ui-react.vercel.app
+
 - **Search**: definiciones agrupadas por categoría gramatical, ejemplos de uso, sinónimos y antónimos.
 - **My words**: colección personal guardada en el navegador (sobrevive a recargas).
 - **Pronunciación**: grabaciones de voz humana de [Wikimedia Commons](https://commons.wikimedia.org) (acento EE. UU., luego Reino Unido y Australia).
@@ -41,7 +43,7 @@ Variables opcionales (copiar `.env.example` a `.env`):
 - **CI** — [`.github/workflows/ci.yml`](.github/workflows/ci.yml): en cada PR hacia `master` y en cada push a `master`
   ejecuta `pnpm install --frozen-lockfile`, `pnpm test:run` y `pnpm build` (job `validate`).
 - **CD** — integración GitHub de Vercel: cada PR recibe una URL de vista previa y cada merge a `master` se publica
-  en producción.
+  en producción (https://dictionary-ui-react.vercel.app).
 - **Protección de rama** — `master` solo acepta cambios por PR con `validate` en verde.
 
 ### Configuración inicial (una sola vez, la hace el dueño del repositorio)
