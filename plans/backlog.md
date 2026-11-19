@@ -11,6 +11,10 @@
     #9 Personaje compañero · #12 Imágenes que ayudan a recordar
 
 ## Prioridad Media
+- [ ] Test real de nivel del usuario (pedido del humano, 2026-11-19). Hoy el nivel sale de lo que el usuario **dice**
+  saber (marca palabras en la prueba de nivel) más el supuesto S7 (las 100 palabras más frecuentes se dan por sabidas);
+  nada lo comprueba. Idea: verificar con preguntas (elegir el significado, completar una frase, escuchar y elegir) por
+  franjas de frecuencia, y ajustar el punto de partida y la meta de lectura con lo que el usuario demuestra.
 - [ ] Fusionar los significados repetidos por categoría gramatical en palabras con varias etimologías (p. ej. "bank")
 
 ## Prioridad Baja / Ideas
