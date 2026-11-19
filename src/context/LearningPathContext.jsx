@@ -95,6 +95,7 @@ export function LearningPathProvider({ children }) {
       remainingToday: state ? remainingToday(state, quota, now()) : 0,
       learnedToday: state ? (state.learnedByDay[dayKey(now())]?.length ?? 0) : 0,
       coverage: covered ? coverage(list, covered) : null,
+      covered,
       nextWords: (savedTerms, count) => (list && state ? nextNewWords(list, state, savedTerms, count) : []),
       completePlacement,
       markKnown,

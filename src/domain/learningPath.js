@@ -101,3 +101,20 @@ export function learnedInLastDays(state, now, days = 7) {
   for (let i = 0; i < days; i += 1) total += state.learnedByDay[dayKey(addDays(now, -i))]?.length ?? 0;
   return total;
 }
+
+/** Coverage that makes reading comfortable (≈ 95 % of the words of a text are known). */
+export const READING_GOAL = 0.95;
+
+/**
+ * Sentence that shows what a coverage means: each word with its NGSL lemma
+ * ("is" → "be"). Short grammar words are known early; "cat", "table" and
+ * "black" appear as the user learns them.
+ */
+export const COVERAGE_SENTENCE = Object.freeze([
+  ['The', 'the'], ['cat', 'cat'], ['is', 'be'], ['on', 'on'], ['the', 'the'],
+  ['table', 'table'], ['and', 'and'], ['it', 'it'], ['is', 'be'], ['black', 'black'],
+]);
+
+/** The coverage sentence with each word marked as known or not. */
+export const sentenceWithBlanks = (covered) =>
+  COVERAGE_SENTENCE.map(([text, lemma]) => ({ text, known: covered.has(lemma) }));

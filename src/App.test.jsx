@@ -290,7 +290,8 @@ describe('App — essential vocabulary path (#19)', () => {
 
     expect((await learningPath.get()).placement.startRank).toBe(101);
     expect(await screen.findByText('#101 most common')).toBeInTheDocument();
-    expect(screen.getByTestId('coverage')).toHaveTextContent(/\d+ %/);
+    expect(screen.getByTestId('coverage')).toHaveTextContent(/you know \d+ of every 100 words/i);
+    expect(screen.getByTestId('coverage-sentence')).toHaveTextContent(/The ___ is on the ___ and it is ___/);
     expect((await learningEvents.list()).map((e) => e.type)).toEqual([EventType.PLACEMENT_COMPLETED]);
   });
 
@@ -344,7 +345,7 @@ describe('App — essential vocabulary path (#19)', () => {
   it('shows coverage and today\'s words on the home screen', async () => {
     renderApp({ path: { placement: START_OF_PATH, known: [], learnedByDay: {}, extraByDay: {} } });
 
-    expect(await screen.findByTestId('coverage')).toHaveTextContent(/your words cover \d+ %/i);
+    expect(await screen.findByTestId('coverage')).toHaveTextContent(/reading goal: \d+ \/ 95 words/i);
     expect(screen.getByText(/10 new words waiting for you today/i)).toBeInTheDocument();
   });
 });

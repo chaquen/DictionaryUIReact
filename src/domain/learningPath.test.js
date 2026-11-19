@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   coverage,
   coveredTerms,
+  sentenceWithBlanks,
   emptyPathState,
   estimateStart,
   isMastered,
@@ -57,6 +58,13 @@ describe('new words', () => {
     const state = { ...emptyPathState(), learnedByDay: { '2026-11-19': ['a', 'b', 'c'] }, extraByDay: { '2026-11-19': 5 } };
     expect(remainingToday(state, 10, NOW)).toBe(12);
     expect(remainingToday({ ...state, extraByDay: {} }, 2, NOW)).toBe(0);
+  });
+});
+
+describe('sentenceWithBlanks', () => {
+  it('hides the words that are not known yet', () => {
+    const tokens = sentenceWithBlanks(new Set(['the', 'be', 'on', 'and', 'it']));
+    expect(tokens.map((t) => (t.known ? t.text : '___')).join(' ')).toBe('The ___ is on the ___ and it is ___');
   });
 });
 
