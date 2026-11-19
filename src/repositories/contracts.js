@@ -35,10 +35,39 @@
  *   Resolves with a playable URL, or null when there is no recording.
  */
 
+/**
+ * Append-only log of learning events (FR-009). Source of metrics and game mechanics.
+ *
+ * @typedef {Object} LearningEventRepository
+ * @property {(event: import('../domain/learningEvent').LearningEvent) => Promise<void>} append
+ * @property {() => Promise<import('../domain/learningEvent').LearningEvent[]>} list  Oldest first.
+ * @property {() => Promise<string>} exportJson  The whole log as a JSON document.
+ */
+
+/**
+ * User preferences: idea flags (FR-010) and the active scheduling algorithm.
+ *
+ * @typedef {Object} PreferencesRepository
+ * @property {() => Promise<{ flags: Record<string, boolean>, schedulingStrategy: string }>} get
+ * @property {(changes: Object) => Promise<{ flags: Record<string, boolean>, schedulingStrategy: string }>} update
+ */
+
+/**
+ * Spaced-repetition cards (#1). Cards are produced by a SchedulingStrategy.
+ *
+ * @typedef {Object} ReviewRepository
+ * @property {() => Promise<import('../domain/scheduling/contract').ReviewCard[]>} list
+ * @property {(cards: import('../domain/scheduling/contract').ReviewCard[]) => Promise<void>} saveAll  Inserts or replaces by term.
+ * @property {(term: string) => Promise<void>} remove
+ */
+
 const CONTRACTS = {
   WordLookupRepository: ['findByTerm'],
   SavedWordsRepository: ['list', 'save', 'remove'],
   PronunciationRepository: ['findAudioUrl'],
+  LearningEventRepository: ['append', 'list', 'exportJson'],
+  PreferencesRepository: ['get', 'update'],
+  ReviewRepository: ['list', 'saveAll', 'remove'],
 };
 
 /**

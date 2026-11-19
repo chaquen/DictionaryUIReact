@@ -1,6 +1,9 @@
 import { assertImplements } from './contracts';
 import { withPronunciation } from './decorators/withPronunciation';
 import { createFreeDictionaryWordRepository } from './freeDictionary/FreeDictionaryWordRepository';
+import { createLocalStorageLearningEventRepository } from './learningEvents/LocalStorageLearningEventRepository';
+import { createLocalStoragePreferencesRepository } from './preferences/LocalStoragePreferencesRepository';
+import { createLocalStorageReviewRepository } from './review/LocalStorageReviewRepository';
 import { createLocalStorageSavedWordsRepository } from './savedWords/LocalStorageSavedWordsRepository';
 import { createWikimediaCommonsPronunciationRepository } from './wikimediaCommons/WikimediaCommonsPronunciationRepository';
 
@@ -8,9 +11,6 @@ import { createWikimediaCommonsPronunciationRepository } from './wikimediaCommon
  * Composition root: the only place that knows which implementations
  * the application uses. To switch dictionary API, create a new adapter
  * that fulfills `WordLookupRepository` and use it here.
- *
- * @returns {{ wordLookup: import('./contracts').WordLookupRepository,
- *             savedWords: import('./contracts').SavedWordsRepository }}
  */
 export function createRepositories() {
   const dictionary = assertImplements(
@@ -26,9 +26,9 @@ export function createRepositories() {
 
   return {
     wordLookup: withPronunciation(dictionary, pronunciation),
-    savedWords: assertImplements(
-      'SavedWordsRepository',
-      createLocalStorageSavedWordsRepository(),
-    ),
+    savedWords: assertImplements('SavedWordsRepository', createLocalStorageSavedWordsRepository()),
+    learningEvents: assertImplements('LearningEventRepository', createLocalStorageLearningEventRepository()),
+    preferences: assertImplements('PreferencesRepository', createLocalStoragePreferencesRepository()),
+    review: assertImplements('ReviewRepository', createLocalStorageReviewRepository()),
   };
 }
