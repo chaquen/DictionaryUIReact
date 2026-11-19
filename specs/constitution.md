@@ -20,7 +20,7 @@ colección personal.
 ## Convenciones de código
 <!-- Naming, estructura de carpetas, patrones preferidos. -->
 - Lenguaje principal: JavaScript (ES modules) + JSX; React con componentes funcionales y hooks; tipos con JSDoc.
-- Estilo: componentes `.jsx` en PascalCase, hooks `useX`, adaptadores `createXRepository`; textos de UI en inglés.
+- Estilo: componentes `.jsx` en PascalCase, hooks `useX`, adaptadores `createXRepository`; textos de UI en inglés con ayuda bilingüe (por defecto en español) desde catálogos por idioma en `src/i18n/`.
 - Tests: Vitest + Testing Library, junto al archivo probado (`*.test.js[x]`); fixtures reales en `__fixtures__/`.
 - Commits: Conventional Commits en inglés (`feat:`, `fix:`, `ci:`…), sin co-autor de IA; una rama por feature y PR hacia `master`.
   `master` está protegida: solo entran cambios por PR con `validate` en verde; no se hace push directo.
@@ -44,11 +44,15 @@ colección personal.
 | 2026-11-18 | Colección en `localStorage` | No hay backend propio | activo |
 | 2026-11-18 | CI con GitHub Actions (job `validate`) + CD con la integración GitHub de Vercel + ruleset en `master` sin bypass | Validar cada PR sin guardar secretos en GitHub y publicar sin pasos manuales (HU-001) | activo |
 | 2026-11-19 | Migrar de React 18 a React 19 para usar three.js con `@react-three/fiber` 9 (HU-002, incremento 4) | `@react-three/fiber` 9 exige React 19; `react-bootstrap` 2.10 y `react-router-dom` 7 lo soportan | aprobado — se aplica en el incremento 4 de HU-002 |
+| 2026-11-19 | Ayuda opcional de traducción al español con la Translator API de Chrome (en el dispositivo), desactivable desde el Lab | Para un principiante, la definición en inglés puede ser tan difícil como la palabra; la traducción local no envía datos ni requiere clave (HU-002, FR-016) | activo |
+| 2026-11-19 | NGSL 1.2 (Browne, Culligan y Phillips) como lista base de vocabulario | 2809 palabras más útiles del inglés cotidiano, licencia CC BY-SA 4.0; atribución visible en la app y el archivo derivado se distribuye con la misma licencia (HU-002, #19) | activo |
+| 2026-11-19 | Ayuda bilingüe de la UI con catálogo propio por claves, sin librería i18n; preparada para más idiomas | Un principiante no entiende instrucciones solo en inglés; el catálogo por claves no añade dependencias y permite agregar idiomas creando un archivo (HU-002, FR-017) | activo |
+| 2026-11-19 | Pictogramas ARASAAC como imagen de cada palabra (API pública sin clave) | Las fotos buscadas por palabra mostraban otro significado ("stand" → puestos de venta, paisajes) incluso filtradas con la IA local; los pictogramas están hechos para aprender vocabulario y van ligados al significado. Licencia CC BY-NC-SA: uso no comercial y atribución visible (autor Sergio Palao, origen ARASAAC, Gobierno de Aragón); si la app pasa a ser comercial hay que retirarlos (HU-002, #12) | activo |
 
 ## Lo que este proyecto NO hace
 <!-- Scope negativo explícito. Evita scope creep. -->
 - Cuentas de usuario ni login.
 - Backend propio.
-- Idiomas distintos del inglés ni traducción.
+- Enseñar idiomas distintos del inglés. La traducción al español solo existe como ayuda opcional (ver ADR).
 - Sincronización entre dispositivos.
 - Funcionamiento sin conexión.

@@ -5,6 +5,7 @@ import { useSavedWords } from './hooks/useSavedWords';
 import IdeaDisabled from './components/common/IdeaDisabled';
 import HomePage from './components/home/HomePage';
 import LabPage from './components/lab/LabPage';
+import LearnPage from './components/learn/LearnPage';
 import AppNav from './components/layout/AppNav';
 import ReviewPage from './components/review/ReviewPage';
 import SavedWordsGrid from './components/SavedWordsGrid';
@@ -15,15 +16,27 @@ export default function App() {
   const learning = useLearning();
   const navigate = useNavigate();
   const reviewEnabled = learning.isEnabled('review');
+  const learnEnabled = learning.isEnabled('learn');
   const dueCount = reviewEnabled ? learning.dueCardsNow(savedWords.words.map((w) => w.word)).length : 0;
 
   return (
     <>
-      <AppNav dueCount={dueCount} wordCount={savedWords.words.length} reviewEnabled={reviewEnabled} />
+      <AppNav
+        dueCount={dueCount}
+        wordCount={savedWords.words.length}
+        reviewEnabled={reviewEnabled}
+        learnEnabled={learnEnabled}
+      />
 
       <Container as="main" className="pb-5">
         <Routes>
           <Route path="/" element={<HomePage savedWords={savedWords} />} />
+          <Route
+            path="/learn"
+            element={
+              learnEnabled ? <LearnPage savedWords={savedWords} /> : <IdeaDisabled title="Essential vocabulary path" />
+            }
+          />
           <Route
             path="/review"
             element={

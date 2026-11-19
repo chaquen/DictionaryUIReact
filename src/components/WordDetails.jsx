@@ -1,13 +1,18 @@
 import Accordion from 'react-bootstrap/Accordion';
 import Badge from 'react-bootstrap/Badge';
 import ListGroup from 'react-bootstrap/ListGroup';
+import { BiLabel } from '../i18n/Help';
 import PronounceButton from './PronounceButton';
+import WordImage from './common/WordImage';
 
-function TermList({ title, terms }) {
+function TermList({ title, helpId, terms }) {
   if (terms.length === 0) return null;
   return (
     <div className="mt-3">
-      <h6 className="text-uppercase text-muted small mb-2">{title}</h6>
+      <h6 className="text-muted small mb-2">
+        <span className="text-uppercase">{title}</span>
+        <BiLabel id={helpId} />
+      </h6>
       <div className="d-flex flex-wrap gap-2">
         {terms.map((term) => (
           <Badge key={term} bg="light" text="dark" className="border fw-normal fs-6">
@@ -20,7 +25,7 @@ function TermList({ title, terms }) {
 }
 
 /** Full view of a domain `Word`: pronunciation, meanings, examples, synonyms and antonyms. */
-export default function WordDetails({ word, actions = null, showHeader = true }) {
+export default function WordDetails({ word, actions = null, showHeader = true, showImage = showHeader }) {
   return (
     <article>
       {showHeader && (
@@ -36,11 +41,24 @@ export default function WordDetails({ word, actions = null, showHeader = true })
         </header>
       )}
 
+      {showImage && (
+        <div className="mb-3">
+          <WordImage
+            term={word.word}
+            source="details"
+            partOfSpeech={word.meanings[0]?.partOfSpeech === 'verb' ? 'verb' : undefined}
+            definition={word.meanings[0]?.definitions[0]?.text}
+          />
+        </div>
+      )}
+
       <Accordion defaultActiveKey="0" alwaysOpen>
         {word.meanings.map((meaning, index) => (
           <Accordion.Item eventKey={String(index)} key={`${meaning.partOfSpeech}-${index}`}>
             <Accordion.Header>
-              <span className="fst-italic me-2">{meaning.partOfSpeech}</span>
+              <span className="fst-italic me-2">
+                <BiLabel id={`pos.${meaning.partOfSpeech}`}>{meaning.partOfSpeech}</BiLabel>
+              </span>
               <Badge bg="secondary" pill>
                 {meaning.definitions.length}
               </Badge>
@@ -61,8 +79,8 @@ export default function WordDetails({ word, actions = null, showHeader = true })
                   </ListGroup.Item>
                 ))}
               </ListGroup>
-              <TermList title="Synonyms" terms={meaning.synonyms} />
-              <TermList title="Antonyms" terms={meaning.antonyms} />
+              <TermList title="Synonyms" helpId="word.synonyms" terms={meaning.synonyms} />
+              <TermList title="Antonyms" helpId="word.antonyms" terms={meaning.antonyms} />
             </Accordion.Body>
           </Accordion.Item>
         ))}

@@ -4,6 +4,12 @@
  */
 export const IDEAS = Object.freeze([
   {
+    id: 'learn',
+    number: 19,
+    title: 'Essential vocabulary path',
+    description: 'New words every day, most useful first (NGSL).',
+  },
+  {
     id: 'review',
     number: 1,
     title: 'Spaced repetition',
@@ -14,6 +20,18 @@ export const IDEAS = Object.freeze([
     number: 18,
     title: 'Game mechanics',
     description: 'Streaks, experience points, levels and achievements.',
+  },
+  {
+    id: 'images',
+    number: 12,
+    title: 'Images',
+    description: 'A picture that helps you recognize and remember each word (Wikimedia).',
+  },
+  {
+    id: 'translation',
+    number: null,
+    title: 'Spanish help',
+    description: 'Optional Spanish translation of words and definitions (on-device).',
   },
 ]);
 

@@ -66,7 +66,12 @@ describe('LocalStoragePreferencesRepository', () => {
 
   it('enables every idea and uses FSRS-6 by default', async () => {
     const repo = createLocalStoragePreferencesRepository({ storage: createMemoryStorage() });
-    expect(await repo.get()).toEqual({ flags: { review: true, gamification: true }, schedulingStrategy: 'fsrs6' });
+    expect(await repo.get()).toEqual({
+      flags: { learn: true, review: true, gamification: true, images: true, translation: true },
+      schedulingStrategy: 'fsrs6',
+      newWordsPerDay: 10,
+      helpLanguage: null,
+    });
   });
 
   it('updates flags one by one and the scheduling strategy', async () => {
@@ -76,7 +81,10 @@ describe('LocalStoragePreferencesRepository', () => {
     await repo.update({ schedulingStrategy: 'leitner' });
 
     const again = createLocalStoragePreferencesRepository({ storage });
-    expect(await again.get()).toEqual({ flags: { review: true, gamification: false }, schedulingStrategy: 'leitner' });
+    expect(await again.get()).toMatchObject({
+      flags: { learn: true, review: true, gamification: false, translation: true },
+      schedulingStrategy: 'leitner',
+    });
   });
 
   it('falls back to defaults with corrupted data', async () => {

@@ -24,6 +24,7 @@ DictionaryUIReact/
     ├── context/           ← RepositoryProvider / useRepositories
     ├── hooks/             ← useWordLookup, useSavedWords, useSpeech
     ├── components/        ← componentes de UI
+    ├── i18n/              ← catálogos de ayuda bilingüe por idioma (help.es.js) y <Bi>, <BiLabel>, <HelpLine>
     └── test/              ← setup de Vitest y fakes en memoria
 ```
 
@@ -32,9 +33,10 @@ DictionaryUIReact/
 <!-- Formato: Módulo | Responsabilidad | Dependencias internas -->
 - `domain` | Modelo `Word` y resultados `found` / `not_found` / `error` | ninguna
 - `repositories` | Contratos, adaptadores y composición | `domain`
-- `context` | Inyecta los repositorios en React | `repositories` (solo en `main.jsx`)
+- `context` | Inyecta los repositorios, el estado de aprendizaje y el idioma de ayuda en React | `repositories` (solo en `main.jsx`), `i18n`
 - `hooks` | Estado de búsqueda, colección y pronunciación | `context`, `domain`
-- `components` | UI | `hooks`, `domain`
+- `components` | UI | `hooks`, `domain`, `i18n`
+- `i18n` | Catálogos de ayuda bilingüe por idioma | ninguna
 
 ## Flujo de datos de alto nivel
 <!-- Diagrama en texto o descripción del flujo principal del sistema. -->

@@ -58,14 +58,16 @@ export function useSavedWords() {
     [words],
   );
 
+  /** @param {{ idea?: string, meta?: Object }} [origin] Where the word came from (search or learning path). */
   const save = useCallback(
-    async (word) => {
+    async (word, { idea = Idea.COLLECTION, meta = {} } = {}) => {
       const isNew = !isSaved(word.word);
       const ok = await mutate(() => savedWords.save(word));
       if (ok && isNew) {
         await ensureCards([word.word]);
-        await record({ idea: Idea.COLLECTION, type: EventType.WORD_SAVED, term: word.word });
+        await record({ idea, type: EventType.WORD_SAVED, term: word.word, meta });
       }
+      return ok;
     },
     [isSaved, mutate, savedWords, ensureCards, record],
   );

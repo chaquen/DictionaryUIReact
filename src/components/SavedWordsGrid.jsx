@@ -7,6 +7,7 @@ import Row from 'react-bootstrap/Row';
 import Spinner from 'react-bootstrap/Spinner';
 import { Trash } from 'react-bootstrap-icons';
 import { countDefinitions, firstDefinition } from '../domain/word';
+import { BiLabel, HelpLine } from '../i18n/Help';
 import PronounceButton from './PronounceButton';
 import WordDetailsModal from './WordDetailsModal';
 
@@ -20,12 +21,22 @@ export default function SavedWordsGrid({ savedWords, onGoToSearch }) {
 
   return (
     <section aria-label="My words">
-      {error && <Alert variant="danger">{error}</Alert>}
+      {error && (
+        <Alert variant="danger">
+          {error}
+          <HelpLine id="search.saveError" />
+        </Alert>
+      )}
 
       {words.length === 0 ? (
         <Alert variant="info" className="text-center">
-          <p className="mb-2">You haven&apos;t saved any words yet.</p>
-          <Button onClick={onGoToSearch}>Search your first word</Button>
+          <p className="mb-2">
+            You haven&apos;t saved any words yet.
+            <HelpLine id="words.empty" />
+          </p>
+          <Button onClick={onGoToSearch}>
+            <BiLabel id="home.searchFirst">Search your first word</BiLabel>
+          </Button>
         </Alert>
       ) : (
         <Row xs={1} md={2} lg={3} className="g-3">
@@ -48,12 +59,13 @@ export default function SavedWordsGrid({ savedWords, onGoToSearch }) {
                         <span className="text-muted">
                           {' '}
                           (+{more} more {more === 1 ? 'definition' : 'definitions'})
+                          <HelpLine id="words.more" vars={{ n: more }} />
                         </span>
                       )}
                     </Card.Text>
                     <div className="d-flex gap-2">
                       <Button variant="primary" onClick={() => setSelected(word)}>
-                        Details
+                        <BiLabel id="words.details">Details</BiLabel>
                       </Button>
                       <Button
                         variant="outline-danger"
