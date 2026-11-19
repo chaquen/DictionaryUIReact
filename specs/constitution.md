@@ -43,6 +43,7 @@ colección personal.
 | 2026-11-18 | Migrar Create React App → Vite + Vitest | CRA sin mantenimiento | activo |
 | 2026-11-18 | Colección en `localStorage` | No hay backend propio | activo |
 | 2026-11-18 | CI con GitHub Actions (job `validate`) + CD con la integración GitHub de Vercel + ruleset en `master` sin bypass | Validar cada PR sin guardar secretos en GitHub y publicar sin pasos manuales (HU-001) | activo |
+| 2026-11-19 | Migrar de React 18 a React 19 para usar three.js con `@react-three/fiber` 9 (HU-002, incremento 4) | `@react-three/fiber` 9 exige React 19; `react-bootstrap` 2.10 y `react-router-dom` 7 lo soportan | aprobado — se aplica en el incremento 4 de HU-002 |
 
 ## Lo que este proyecto NO hace
 <!-- Scope negativo explícito. Evita scope creep. -->

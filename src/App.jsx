@@ -1,41 +1,43 @@
-import { useState } from 'react';
-import Badge from 'react-bootstrap/Badge';
 import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { useLearning } from './context/LearningContext';
 import { useSavedWords } from './hooks/useSavedWords';
+import IdeaDisabled from './components/common/IdeaDisabled';
+import HomePage from './components/home/HomePage';
+import LabPage from './components/lab/LabPage';
+import AppNav from './components/layout/AppNav';
+import ReviewPage from './components/review/ReviewPage';
 import SavedWordsGrid from './components/SavedWordsGrid';
 import WordSearch from './components/WordSearch';
 
-const TABS = { HOME: 'home', SEARCH: 'search' };
-
 export default function App() {
-  const [tab, setTab] = useState(TABS.HOME);
   const savedWords = useSavedWords();
+  const learning = useLearning();
+  const navigate = useNavigate();
+  const reviewEnabled = learning.isEnabled('review');
+  const dueCount = reviewEnabled ? learning.dueCardsNow(savedWords.words.map((w) => w.word)).length : 0;
 
   return (
     <>
-      <Navbar bg="primary" data-bs-theme="dark" expand="sm" className="mb-4">
-        <Container>
-          <Navbar.Brand>Dictionary</Navbar.Brand>
-          <Nav activeKey={tab} onSelect={(key) => setTab(key)} className="flex-row gap-3">
-            <Nav.Link eventKey={TABS.HOME}>
-              My words{' '}
-              <Badge bg="light" text="dark" pill>
-                {savedWords.words.length}
-              </Badge>
-            </Nav.Link>
-            <Nav.Link eventKey={TABS.SEARCH}>Search</Nav.Link>
-          </Nav>
-        </Container>
-      </Navbar>
+      <AppNav dueCount={dueCount} wordCount={savedWords.words.length} reviewEnabled={reviewEnabled} />
 
       <Container as="main" className="pb-5">
-        {tab === TABS.HOME ? (
-          <SavedWordsGrid savedWords={savedWords} onGoToSearch={() => setTab(TABS.SEARCH)} />
-        ) : (
-          <WordSearch savedWords={savedWords} />
-        )}
+        <Routes>
+          <Route path="/" element={<HomePage savedWords={savedWords} />} />
+          <Route
+            path="/review"
+            element={
+              reviewEnabled ? <ReviewPage savedWords={savedWords} /> : <IdeaDisabled title="Spaced repetition" />
+            }
+          />
+          <Route
+            path="/words"
+            element={<SavedWordsGrid savedWords={savedWords} onGoToSearch={() => navigate('/search')} />}
+          />
+          <Route path="/search" element={<WordSearch savedWords={savedWords} />} />
+          <Route path="/lab" element={<LabPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </Container>
     </>
   );

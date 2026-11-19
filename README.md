@@ -6,8 +6,13 @@ Diccionario de inglés: busca palabras, escucha su pronunciación y guarda tu pr
 
 **App publicada:** https://dictionary-ui-react.vercel.app
 
+- **Home**: palabras para repasar hoy, racha, XP, nivel y logros.
+- **Review**: repaso espaciado. Recuerdas el significado, lo revelas y te calificas (Again, Hard, Good, Easy);
+  el algoritmo (FSRS-6 por defecto, o cajas de Leitner) decide cuándo volver a preguntarte cada palabra.
 - **Search**: definiciones agrupadas por categoría gramatical, ejemplos de uso, sinónimos y antónimos.
-- **My words**: colección personal guardada en el navegador (sobrevive a recargas).
+- **My words**: colección personal guardada en el navegador (sobrevive a recargas). Guardar una palabra la agrega al repaso.
+- **Lab**: activa o desactiva cada idea del MVP, elige el algoritmo de repaso, consulta las métricas de aprendizaje y
+  expórtalas como JSON. Los datos nunca salen del navegador.
 - **Pronunciación**: grabaciones de voz humana de [Wikimedia Commons](https://commons.wikimedia.org) (acento EE. UU., luego Reino Unido y Australia).
   Si una palabra no tiene grabación, o para leer definiciones, usa la mejor voz sintética instalada
   (prioriza voces "Natural", "Google", "Premium" o "Enhanced" y descarta las voces de broma de macOS).
@@ -60,7 +65,12 @@ Variables opcionales (copiar `.env.example` a `.env`):
 
 ```
 src/
-├── domain/word.js                  Modelo de dominio (Word, Meaning, Definition) y resultados de búsqueda
+├── domain/
+│   ├── word.js                     Modelo de dominio (Word, Meaning, Definition) y resultados de búsqueda
+│   ├── learningEvent.js            Eventos de aprendizaje: fuente de métricas y gamificación
+│   ├── scheduling/                 Patrón Strategy: FSRS-6 y Leitner (+ sombra de FSRS-6 para evaluarlo)
+│   ├── gamification.js             XP, niveles, racha y logros calculados desde los eventos
+│   └── metrics.js                  Métricas por idea y calidad del repaso
 ├── repositories/
 │   ├── contracts.js                Contratos: WordLookupRepository, PronunciationRepository, SavedWordsRepository
 │   ├── index.js                    Raíz de composición: elige las implementaciones
@@ -68,7 +78,7 @@ src/
 │   ├── wikimediaCommons/           Adaptador de grabaciones humanas (PronunciationRepository)
 │   ├── decorators/withPronunciation.js  Enriquece cualquier diccionario con esas grabaciones
 │   └── savedWords/                 Adaptador de localStorage para la colección
-├── context/RepositoryContext.jsx   Inyecta los repositorios en React
+├── context/                        RepositoryProvider + LearningProvider (eventos, preferencias, tarjetas)
 ├── hooks/                          useWordLookup, useSavedWords, useSpeech
 └── components/                     UI: solo conoce el modelo de dominio
 ```
