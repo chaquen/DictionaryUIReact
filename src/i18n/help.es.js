@@ -61,7 +61,11 @@ export default {
   'learn.moreButton': 'Aprender 5 más',
   'learn.listDone': 'Recorriste toda la lista. ¡Impresionante!',
   'learn.loadError': 'No se pudo cargar la lista de palabras.',
-  'learn.coverage': ({ pct }) => `Tus palabras cubren el ${pct} % de un texto común en inglés`,
+  'learn.goal': ({ pct, goal }) => `Meta de lectura: ${pct} / ${goal} palabras`,
+  'learn.coverage': ({ pct, goal }) =>
+    `Conoces ${pct} de cada 100 palabras de un texto común en inglés. Con ${goal} puedes leer con comodidad.`,
+  'learn.sentence': 'En una frase común entenderías:',
+  'learn.coverage.why': 'Palabras cortas como "the" e "is" se repiten mucho, por eso al principio el número sube rápido.',
   // Placement test
   'placement.title': '¿Cuáles de estas palabras conoces?',
   'placement.instructions': ({ step, total }) =>

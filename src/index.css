@@ -84,6 +84,24 @@ body {
   }
 }
 
+/* Reading goal (coverage). */
+.coverage-goal {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  background: var(--bs-dark);
+}
+
+.coverage-sentence {
+  font-size: 1.05rem;
+}
+
+.coverage-blank {
+  color: var(--bs-secondary-color);
+  letter-spacing: 0.05em;
+}
+
 /* Example of use in /learn. */
 .word-example blockquote {
   font-size: 1.05rem;
