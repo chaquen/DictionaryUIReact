@@ -18,6 +18,7 @@ export const Idea = Object.freeze({
   LEARN: 'learn',
   TRANSLATION: 'translation',
   IMAGES: 'images',
+  PRONUNCIATION: 'pronunciation',
 });
 
 export const EventType = Object.freeze({
@@ -28,6 +29,7 @@ export const EventType = Object.freeze({
   TRANSLATION_SHOWN: 'translation_shown',
   IMAGE_SHOWN: 'image_shown',
   IMAGE_REJECTED: 'image_rejected',
+  PRONUNCIATION_ATTEMPT: 'pronunciation_attempt',
 });
 
 let sequence = 0;

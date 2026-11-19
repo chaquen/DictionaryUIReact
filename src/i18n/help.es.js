@@ -82,6 +82,7 @@ export default {
   'review.left': ({ n, done }) => `Quedan ${n}${done ? ` · ${done} hechas` : ''}`,
   'review.question': '¿Recuerdas qué significa? Califícate, o mira primero la respuesta.',
   'review.showAnswer': 'Ver respuesta',
+  'review.sayFirst': 'Primero di la palabra en voz alta para calificarte.',
   'review.allMeanings': 'Todos los significados',
   'review.noDefinition': 'No hay definiciones disponibles.',
   // Grades (keys come from `GRADES` in domain/scheduling/grades.js)
@@ -125,6 +126,51 @@ export default {
   // Word image (Wikimedia)
   'image.another': 'Otra imagen',
 
+  // Pronunciation practice (#2)
+  'say.button': 'Dilo en voz alta',
+  'say.again': 'Intentar de nuevo',
+  'say.listening': ({ term }) => `Escuchando… di "${term}"`,
+  'say.installing': 'Descargando el modelo de voz…',
+  'say.correct': '¡Bien dicho! Se entendió la palabra.',
+  'say.wrong': 'No se entendió la palabra. Escúchala y vuelve a intentarlo.',
+  'say.cloud': 'En este navegador tu voz se envía a Google para reconocerla.',
+  'say.error.mic': 'Permite el uso del micrófono para practicar.',
+  'say.error.noMic': 'No se encontró un micrófono.',
+  'say.error.silence': 'No se oyó nada. Inténtalo de nuevo.',
+  'say.error.network': 'En este navegador el reconocimiento de voz necesita conexión.',
+  'say.error.install': 'El reconocimiento en el equipo no está disponible aquí. Pulsa de nuevo para usar el servicio de Google.',
+  'say.error.generic': 'Algo salió mal. Inténtalo de nuevo.',
+
+  // Pronunciation aids (phonetics)
+  'phonetic.sayLike': ({ text }) => `Se pronuncia más o menos: ${text}`,
+  'phonetic.slow': 'Escuchar lento',
+  'say.diff.change': ({ target, heard, where }) => `Di /${target}/ en lugar de /${heard}/ ${where}.`,
+  'say.diff.missing': ({ target, where }) => `Te faltó el sonido /${target}/ ${where}.`,
+  'say.diff.extra': ({ heard, where }) => `Sobra el sonido /${heard}/ ${where}.`,
+  'say.compare': 'Compara tu voz con la grabación:',
+  'say.yourVoice': 'Tu voz',
+  'say.native': 'Nativo',
+  // Sound tips (keys come from SOUND_TIPS in domain/phonetics.js)
+  'sound.ae': 'Abre la boca como para decir "a", pero di "e". Está entre las dos.',
+  'sound.uh': 'Una "a" corta y relajada, con la boca medio abierta.',
+  'sound.schwa': 'Una vocal débil y muy corta, como una "e" perezosa. Nunca lleva acento.',
+  'sound.ih': 'Una "i" corta y relajada, entre "i" y "e".',
+  'sound.ee': 'Una "i" larga: sonríe y sostenla.',
+  'sound.oo': 'Una "u" corta y relajada, con los labios apenas redondeados.',
+  'sound.ooo': 'Una "u" larga: redondea los labios y sostenla.',
+  'sound.er': 'Como una "e" con la lengua hacia atrás, casi "er", sin hacer vibrar la r.',
+  'sound.th': 'Lengua entre los dientes y sopla, como la "z" de España.',
+  'sound.dh': 'Lengua entre los dientes con voz, como una "d" suave ("nada").',
+  'sound.sh': 'Como cuando pides silencio: "shh".',
+  'sound.zh': 'Como "sh" pero con voz, como en "measure".',
+  'sound.h': 'Un soplo suave, mucho más suave que la "j" española.',
+  'sound.v': 'Dientes de arriba sobre el labio de abajo, con voz. No suena como "b".',
+  'sound.z': 'Una "s" con zumbido, con voz, como una abeja.',
+  'sound.r': 'La lengua no toca el paladar. Nunca vibra.',
+  'sound.ng': 'Como la "n" de "tengo", desde atrás. La "g" no se oye.',
+  'sound.j': 'Como una "y" fuerte con una "d" antes: "dy".',
+  'sound.w': 'Redondea los labios como para "u" y ábrelos rápido.',
+
   // Translation help
   'translate.show': ({ language }) => `Ver en ${language}`, // "Show in Spanish"
   'translate.downloading': ({ pct }) => `Descargando el traductor ${pct} %…`,
@@ -138,7 +184,8 @@ export default {
   'idea.learn': 'Ruta de vocabulario esencial: palabras nuevas cada día, las más útiles primero',
   'idea.review': 'Repaso espaciado: repasa tus palabras justo antes de olvidarlas',
   'idea.gamification': 'Mecánicas de juego: rachas, puntos de experiencia, niveles y logros',
-  'idea.images': 'Imágenes: una foto que ayuda a reconocer y recordar cada palabra',
+  'idea.pronunciation': 'Pronunciación: di la palabra en voz alta y descubre si se entendió',
+  'idea.images': 'Imágenes: un pictograma que muestra el significado de sustantivos y verbos',
   'idea.translation': 'Ayuda de traducción: traducción opcional de palabras y definiciones en tu equipo',
 
   // Lab (/lab)
@@ -150,6 +197,10 @@ export default {
   'lab.newWords': 'Palabras nuevas por día',
   'lab.helpLanguage': 'Idioma de ayuda',
   'lab.helpLanguage.note': 'Las instrucciones siguen en inglés; aquí eliges el idioma de la línea de ayuda.',
+  'lab.device': 'Este equipo',
+  'lab.device.speech': 'Reconocimiento de voz',
+  'lab.device.mic': 'Micrófono',
+  'lab.device.ai': 'IA en el equipo',
   'lab.usage': 'Uso por idea',
   'lab.noActivity': 'Aún no hay actividad.',
   'lab.quality': 'Calidad del repaso',

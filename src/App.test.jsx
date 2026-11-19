@@ -1,7 +1,7 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import AppProviders from './context/AppProviders';
 import { EventType, Idea, createEvent } from './domain/learningEvent';
@@ -14,6 +14,7 @@ import { createLocalStorageLearningPathRepository } from './repositories/learnin
 import { createNgslVocabularyRepository } from './repositories/vocabulary/NgslVocabularyRepository';
 import { createMemoryStorage } from './repositories/shared/jsonStore';
 import { buildWord, createFakeSavedWords, createFakeWordLookup } from './test/fakes';
+import { createFakeSpeechRecognition } from './test/fakeSpeech';
 
 const NOW = new Date('2026-11-19T10:00:00');
 
@@ -188,6 +189,22 @@ describe('App — spaced repetition (#1)', () => {
     expect(screen.getByRole('link', { name: /review/i })).toHaveTextContent('2');
   });
 
+  it('shows the next word by itself as soon as it becomes due', async () => {
+    let now = NOW;
+    const soon = new Date(NOW.getTime() + 1000).toISOString();
+    renderApp({
+      saved: [buildWord({ word: 'bank' })],
+      cards: [{ ...createReviewCard('bank', 'fsrs6', NOW), due: soon }],
+      route: '/review',
+      clock: () => now,
+    });
+
+    expect(await screen.findByText(/next review: in less than a minute/i)).toBeInTheDocument();
+    now = new Date(NOW.getTime() + 2000);
+
+    expect(await screen.findByRole('heading', { name: /bank/i }, { timeout: 3000 })).toBeInTheDocument();
+  });
+
   it('says when nothing is due', async () => {
     const later = new Date(NOW.getTime() + 3 * 86_400_000).toISOString();
     renderApp({
@@ -234,7 +251,7 @@ describe('App — Lab (FR-009, FR-010)', () => {
     await user.click(await screen.findByRole('switch', { name: /spaced repetition/i }));
     await user.click(screen.getByRole('switch', { name: /game mechanics/i }));
 
-    expect((await preferences.get()).flags).toEqual({ learn: true, review: false, gamification: false, images: true, translation: true });
+    expect((await preferences.get()).flags).toEqual({ learn: true, review: false, gamification: false, pronunciation: true, images: true, translation: true });
     expect(screen.queryByRole('link', { name: /^review/i })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('link', { name: /home/i }));
@@ -477,6 +494,162 @@ describe('App — images (#12)', () => {
     expect(box).toHaveTextContent(example);
     expect(within(box).getByText(term, { selector: 'mark' })).toBeInTheDocument();
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
+});
+
+describe('App — pronunciation (#2)', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    localStorage.removeItem('dictionary-ui:speech-local-failed:v1');
+  });
+
+  const path = { placement: START_OF_PATH, known: [], learnedByDay: {}, extraByDay: {} };
+  const firstWord = async () => nextNewWords(await createNgslVocabularyRepository().list(), path, [], 1)[0].term;
+
+  it('says when the word was understood and records the attempt (on the device)', async () => {
+    const user = userEvent.setup();
+    const term = await firstWord();
+    const api = createFakeSpeechRecognition({ heard: [`${term}.`, 'something else'] });
+    vi.stubGlobal('SpeechRecognition', api);
+    const { learningEvents } = renderApp({ route: '/learn', path });
+
+    await user.click(await screen.findByRole('button', { name: 'Say it' }));
+
+    expect(await screen.findByText(/well said!/i)).toBeInTheDocument();
+    expect(api.instances[0].processLocally).toBe(true);
+    const [event] = await learningEvents.list();
+    expect(event).toMatchObject({ idea: Idea.PRONUNCIATION, type: EventType.PRONUNCIATION_ATTEMPT, term, correct: true });
+    expect(event.meta).toMatchObject({ local: true, source: 'learn' });
+    expect(screen.queryByText(/sent to google/i)).not.toBeInTheDocument();
+  });
+
+  it('shows what it heard when it does not match and lets you try again', async () => {
+    const user = userEvent.setup();
+    const term = await firstWord();
+    vi.stubGlobal('SpeechRecognition', createFakeSpeechRecognition({ heard: ['banana'] }));
+    const { learningEvents } = renderApp({ route: '/learn', path });
+
+    await user.click(await screen.findByRole('button', { name: 'Say it' }));
+
+    expect(await screen.findByText(/I heard "banana"/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeEnabled();
+    expect((await learningEvents.list())[0]).toMatchObject({ term, correct: false });
+  });
+
+  it('downloads the on-device model on the first click when needed', async () => {
+    const user = userEvent.setup();
+    const term = await firstWord();
+    const api = createFakeSpeechRecognition({ availability: 'downloadable', heard: [term] });
+    vi.stubGlobal('SpeechRecognition', api);
+    renderApp({ route: '/learn', path });
+
+    await user.click(await screen.findByRole('button', { name: 'Say it' }));
+
+    expect(await screen.findByText(/well said!/i)).toBeInTheDocument();
+    expect(api.install).toHaveBeenCalledWith({ langs: ['en-US'] });
+  });
+
+  it('falls back to Google only after telling you, when the on-device model cannot be downloaded', async () => {
+    const user = userEvent.setup();
+    const term = await firstWord();
+    const api = createFakeSpeechRecognition({ availability: 'downloadable', installOk: false, heard: [term] });
+    vi.stubGlobal('SpeechRecognition', api);
+    renderApp({ route: '/learn', path });
+
+    await user.click(await screen.findByRole('button', { name: 'Say it' }));
+    expect(await screen.findByText(/on-device recognition isn't available here/i)).toBeInTheDocument();
+    expect(screen.getByText(/sent to Google/)).toBeInTheDocument();
+    expect(api.instances).toHaveLength(0);
+
+    await user.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByText(/well said!/i)).toBeInTheDocument();
+    expect(api.instances[0].processLocally).toBeUndefined();
+  });
+
+  it('does not ask again on the next word after the on-device download failed', async () => {
+    const user = userEvent.setup();
+    const term = await firstWord();
+    localStorage.setItem('dictionary-ui:speech-local-failed:v1', String(Date.now()));
+    const api = createFakeSpeechRecognition({ availability: 'downloadable', heard: [term] });
+    vi.stubGlobal('SpeechRecognition', api);
+    renderApp({ route: '/learn', path });
+
+    expect(await screen.findByText(/sent to Google/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Say it' }));
+
+    expect(await screen.findByText(/well said!/i)).toBeInTheDocument();
+    expect(api.install).not.toHaveBeenCalled();
+  });
+
+  it('warns when the voice goes to Google and explains microphone errors', async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal('SpeechRecognition', createFakeSpeechRecognition({ availability: 'unavailable', error: 'not-allowed' }));
+    renderApp({ route: '/learn', path });
+
+    expect(await screen.findByText(/sent to Google/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Say it' }));
+    expect(await screen.findByText(/allow the microphone/i)).toBeInTheDocument();
+  });
+
+  it('in review, unlocks grading only after saying the word', async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal('SpeechRecognition', createFakeSpeechRecognition({ heard: ['bank'] }));
+    const { review } = renderApp({ saved: [buildWord({ word: 'bank' })], route: '/review' });
+
+    await screen.findByRole('button', { name: 'Say it' });
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Good' })).toBeDisabled());
+    expect(screen.getByText(/say the word first/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Say it' }));
+    await user.click(await screen.findByRole('button', { name: 'Good', disabled: false }));
+
+    expect(await screen.findByText(/all caught up/i)).toBeInTheDocument();
+    expect((await review.list())[0].reviews).toBe(1);
+  });
+
+  it('in review, unlocks grading when the microphone is blocked', async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal('SpeechRecognition', createFakeSpeechRecognition({ error: 'not-allowed' }));
+    renderApp({ saved: [buildWord({ word: 'bank' })], route: '/review' });
+
+    await user.click(await screen.findByRole('button', { name: 'Say it' }));
+
+    expect(await screen.findByRole('button', { name: 'Easy', disabled: false })).toBeEnabled();
+  });
+
+  it('helps with the pronunciation: Spanish-style spelling and how to make hard sounds', async () => {
+    const user = userEvent.setup();
+    const term = await firstWord();
+    renderApp({ route: '/learn', path, dictionary: [buildWord({ word: term, phonetic: '/hoʊl/' })] });
+
+    const help = await screen.findByTestId('phonetic-help');
+    expect(help).toHaveTextContent('Sounds like: joul');
+    await user.click(within(help).getByRole('button', { name: 'How to say /h/' }));
+    expect(within(help).getByRole('note')).toHaveTextContent(/soft breath/);
+    expect(within(help).getByRole('button', { name: /slowly/ })).toBeInTheDocument();
+  });
+
+  it('shows which sound changed when the word is not understood', async () => {
+    const user = userEvent.setup();
+    const term = await firstWord();
+    vi.stubGlobal('SpeechRecognition', createFakeSpeechRecognition({ heard: ['home'] }));
+    renderApp({
+      route: '/learn',
+      path,
+      dictionary: [buildWord({ word: term, phonetic: '/hoʊl/' }), buildWord({ word: 'home', phonetic: '/hoʊm/' })],
+    });
+
+    await user.click(await screen.findByRole('button', { name: 'Say it' }));
+
+    const diff = await screen.findByTestId('pronunciation-diff');
+    expect(diff).toHaveTextContent('home /hoʊm/');
+    expect(diff).toHaveTextContent('Say /l/ instead of /m/ at the end.');
+  });
+
+  it('is hidden without speech recognition', async () => {
+    renderApp({ route: '/learn', path });
+    await screen.findByRole('button', { name: 'Learn it' });
+    expect(screen.queryByRole('button', { name: 'Say it' })).not.toBeInTheDocument();
   });
 });
 

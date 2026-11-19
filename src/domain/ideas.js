@@ -22,10 +22,16 @@ export const IDEAS = Object.freeze([
     description: 'Streaks, experience points, levels and achievements.',
   },
   {
+    id: 'pronunciation',
+    number: 2,
+    title: 'Pronunciation',
+    description: 'Say the word aloud and find out if it was understood.',
+  },
+  {
     id: 'images',
     number: 12,
     title: 'Images',
-    description: 'A picture that helps you recognize and remember each word (Wikimedia).',
+    description: 'A pictogram that shows the meaning of nouns and verbs (ARASAAC).',
   },
   {
     id: 'translation',

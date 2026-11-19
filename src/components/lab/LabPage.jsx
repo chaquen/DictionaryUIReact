@@ -12,6 +12,7 @@ import { STRATEGIES } from '../../domain/scheduling';
 import { useLearning } from '../../context/LearningContext';
 import { useRepositories } from '../../context/RepositoryContext';
 import { downloadText } from '../../utils/download';
+import DeviceCard from './DeviceCard';
 import { Bi, BiLabel, HelpLine } from '../../i18n/Help';
 import { DEFAULT_HELP_LANGUAGE, HELP_LANGUAGES, NO_HELP } from '../../i18n/languages';
 
@@ -140,6 +141,8 @@ export default function LabPage() {
           </Form.Select>
         </Card.Body>
       </Card>
+
+      <DeviceCard />
 
       <Card className="shadow-sm mb-3">
         <Card.Body>

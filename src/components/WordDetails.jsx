@@ -3,6 +3,8 @@ import Badge from 'react-bootstrap/Badge';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { BiLabel } from '../i18n/Help';
 import PronounceButton from './PronounceButton';
+import PhoneticHelp from './pronunciation/PhoneticHelp';
+import SayItButton from './pronunciation/SayItButton';
 import WordImage from './common/WordImage';
 
 function TermList({ title, helpId, terms }) {
@@ -35,7 +37,16 @@ export default function WordDetails({ word, actions = null, showHeader = true, s
               <PronounceButton text={word.word} audioUrl={word.audioUrl} size={24} />
               {word.word}
             </h2>
-            {word.phonetic && <span className="text-muted ms-4">{word.phonetic}</span>}
+            <PhoneticHelp term={word.word} ipa={word.phonetic} audioUrl={word.audioUrl} className="ms-4 mt-1" />
+            <div className="mt-2">
+              <SayItButton
+                key={word.word}
+                term={word.word}
+                phonetic={word.phonetic}
+                audioUrl={word.audioUrl}
+                source="details"
+              />
+            </div>
           </div>
           {actions}
         </header>
