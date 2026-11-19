@@ -11,6 +11,13 @@
     #9 Personaje compañero · #12 Imágenes que ayudan a recordar
 
 ## Prioridad Media
+- [ ] Avance visible en la meta de lectura (pedido del humano, 2026-11-19). Validado: las palabras sí suman, pero cada una
+  pesa poco (#301 "control" = 0,032 %, #700 "fit" = 0,014 %) y el número redondeado a enteros no cambia hasta marcar
+  30–70 palabras; además "Learn it" solo cuenta al dominar la palabra (estabilidad ≥ 21 días, S9). Hacer:
+  - Mostrar el avance al marcar o aprender una palabra (p. ej. "+0,03 % → 66,4 %") y la meta con un decimal.
+  - Enlace "How is this calculated? · ¿Cómo se calcula?" que despliega una explicación corta: peso por frecuencia,
+    las 100 palabras más comunes dadas por sabidas (S7), la prueba de nivel, "I know it" suma al instante, "Learn it"
+    suma al dominarla, y por qué la meta es 95.
 - [ ] Test real de nivel del usuario (pedido del humano, 2026-11-19). Hoy el nivel sale de lo que el usuario **dice**
   saber (marca palabras en la prueba de nivel) más el supuesto S7 (las 100 palabras más frecuentes se dan por sabidas);
   nada lo comprueba. Idea: verificar con preguntas (elegir el significado, completar una frase, escuchar y elegir) por
