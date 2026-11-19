@@ -9,6 +9,8 @@ import { EventType, addDays, dayKey } from './learningEvent';
 export const XP_RULES = Object.freeze({
   [EventType.WORD_SAVED]: { base: 5, correctBonus: 0 },
   [EventType.WORD_REVIEWED]: { base: 10, correctBonus: 5 },
+  [EventType.WORD_MARKED_KNOWN]: { base: 1, correctBonus: 0 },
+  [EventType.PLACEMENT_COMPLETED]: { base: 10, correctBonus: 0 },
 });
 
 /** Events that keep a streak alive (searching alone does not count). */

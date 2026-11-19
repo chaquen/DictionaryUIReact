@@ -61,6 +61,65 @@
  * @property {(term: string) => Promise<void>} remove
  */
 
+/**
+ * Ordered list of useful vocabulary (#19), most frequent first.
+ *
+ * @typedef {Object} VocabularyListRepository
+ * @property {() => Promise<import('../domain/learningPath').VocabularyEntry[]>} list
+ * @property {{ name: string, authors: string, license: string, url: string }} source  Shown as attribution.
+ */
+
+/**
+ * The user's progress along the vocabulary path (#19).
+ *
+ * @typedef {Object} LearningPathRepository
+ * @property {() => Promise<import('../domain/learningPath').LearningPathState>} get
+ * @property {(state: import('../domain/learningPath').LearningPathState) => Promise<import('../domain/learningPath').LearningPathState>} save
+ */
+
+/**
+ * Optional Spanish help (FR-016).
+ *
+ * @typedef {Object} TranslationRepository
+ * @property {(from: string, to: string) => Promise<'available'|'downloadable'|'downloading'|'unavailable'>} availability
+ * @property {(text: string, from: string, to: string, options?: { onProgress?: (fraction: number) => void }) => Promise<{ status: 'ok', text: string } | { status: 'error', code: 'unavailable' | 'failed', message: string }>} translate
+ */
+
+/**
+ * @typedef {Object} WordImage
+ * @property {string} url        Thumbnail URL
+ * @property {number} width
+ * @property {number} height
+ * @property {string} title      File name
+ * @property {string} author
+ * @property {string} license
+ * @property {string|null} licenseUrl
+ * @property {string} pageUrl    File page with the full attribution
+ * @property {'arasaac'|'wikipedia'|'wikidata'|'openverse'} source  Where the picture was found
+ * @property {string|null} [caption]  Short explanation of what the picture shows, when the source has one
+ * @property {boolean} [checked]  True when the local AI confirmed it shows the meaning
+ */
+
+/**
+ * Pictures that help recognize a word (#12, FR-006).
+ * @typedef {Object} ImageRepository
+ * @property {(term: string, options?: { signal?: AbortSignal, partOfSpeech?: 'verb', definition?: string, onPartial?: (images: WordImage[]) => void }) => Promise<WordImage[]>} findImages
+ *   Best image first; an empty list when there is no good image. Never rejects (except on abort).
+ *   Sources that combine several providers may call `onPartial` with the images found so far.
+ *   `partOfSpeech: 'verb'` lets sources look for the action instead of the noun; `definition` lets a
+ *   relevance filter keep only pictures that show that meaning.
+ */
+
+/**
+ * Judges whether a picture shows the meaning of a word (#12, P13), e.g. with
+ * the on-device AI of the browser.
+ * @typedef {Object} ImageJudgeRepository
+ * @property {() => Promise<'available'|'downloadable'|'downloading'|'unavailable'>} availability
+ * @property {(options?: { onProgress?: (fraction: number) => void }) => Promise<{ status: 'ok' } | { status: 'error', code: 'unavailable'|'failed' }>} prepare
+ *   Downloads the model; call it from a user gesture.
+ * @property {(image: WordImage, context: { term: string, definition: string, signal?: AbortSignal }) => Promise<'match'|'no_match'|'unknown'>} judge
+ */
+
 const CONTRACTS = {
   WordLookupRepository: ['findByTerm'],
   SavedWordsRepository: ['list', 'save', 'remove'],
@@ -68,6 +127,11 @@ const CONTRACTS = {
   LearningEventRepository: ['append', 'list', 'exportJson'],
   PreferencesRepository: ['get', 'update'],
   ReviewRepository: ['list', 'saveAll', 'remove'],
+  VocabularyListRepository: ['list'],
+  LearningPathRepository: ['get', 'save'],
+  TranslationRepository: ['availability', 'translate'],
+  ImageRepository: ['findImages'],
+  ImageJudgeRepository: ['availability', 'prepare', 'judge'],
 };
 
 /**

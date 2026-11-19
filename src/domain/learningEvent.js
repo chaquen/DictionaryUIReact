@@ -15,11 +15,19 @@
 export const Idea = Object.freeze({
   COLLECTION: 'collection',
   REVIEW: 'review',
+  LEARN: 'learn',
+  TRANSLATION: 'translation',
+  IMAGES: 'images',
 });
 
 export const EventType = Object.freeze({
   WORD_SAVED: 'word_saved',
   WORD_REVIEWED: 'word_reviewed',
+  WORD_MARKED_KNOWN: 'word_marked_known',
+  PLACEMENT_COMPLETED: 'placement_completed',
+  TRANSLATION_SHOWN: 'translation_shown',
+  IMAGE_SHOWN: 'image_shown',
+  IMAGE_REJECTED: 'image_rejected',
 });
 
 let sequence = 0;

@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom';
 import { firstDefinition, normalizeTerm } from '../../domain/word';
 import { GRADES, getStrategy } from '../../domain/scheduling';
 import { useLearning } from '../../context/LearningContext';
+import { Bi, BiLabel, HelpLine } from '../../i18n/Help';
+import SpanishHelp from '../common/SpanishHelp';
 import PronounceButton from '../PronounceButton';
 import WordDetails from '../WordDetails';
 
@@ -43,6 +45,7 @@ export default function ReviewPage({ savedWords }) {
     return (
       <Alert variant="info">
         You have no saved words yet. <Link to="/search">Search and save</Link> some to start reviewing.
+        <HelpLine id="review.noWords" />
       </Alert>
     );
   }
@@ -52,15 +55,23 @@ export default function ReviewPage({ savedWords }) {
     return (
       <section aria-label="Review">
         <Alert variant="success">
-          <Alert.Heading as="h2" className="h5">
+          <Bi id="review.allDone" as={Alert.Heading} className="h5 mb-0">
             All caught up!
-          </Alert.Heading>
+          </Bi>
           {session.reviewed > 0 && (
-            <p className="mb-1">
+            <Bi id="review.summary" vars={{ n: session.reviewed, correct: session.correct }} className="mb-0">
               You reviewed {session.reviewed} {session.reviewed === 1 ? 'word' : 'words'} and remembered {session.correct}.
-            </p>
+            </Bi>
           )}
-          <p className="mb-0">{next ? `Next review: ${formatDate(next)}` : 'No reviews scheduled.'}</p>
+          {next ? (
+            <Bi id="review.next" vars={{ date: formatDate(next) }} className="mb-0" helpClassName="mb-0">
+              Next review: {formatDate(next)}
+            </Bi>
+          ) : (
+            <Bi id="review.noneScheduled" className="mb-0" helpClassName="mb-0">
+              No reviews scheduled.
+            </Bi>
+          )}
         </Alert>
       </section>
     );
@@ -72,7 +83,9 @@ export default function ReviewPage({ savedWords }) {
     <section aria-label="Review">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <span className="text-muted">
-          {due.length} left {session.reviewed > 0 && `· ${session.reviewed} done`}
+          <BiLabel id="review.left" vars={{ n: due.length, done: session.reviewed }}>
+            {due.length} left {session.reviewed > 0 && `· ${session.reviewed} done`}
+          </BiLabel>
         </span>
         <Badge bg="light" text="dark" className="border" title={strategy.description}>
           {strategy.name}
@@ -88,33 +101,49 @@ export default function ReviewPage({ savedWords }) {
           </h2>
           {word.phonetic && <p className="text-muted ms-4">{word.phonetic}</p>}
 
+          <Bi id="review.question" className="mt-3 mb-0">
+            Do you remember what it means? Rate yourself, or check the answer first.
+          </Bi>
+          <div className="d-flex flex-wrap gap-2" role="group" aria-label="Rate your answer">
+            {GRADES.map((g) => (
+              <Button
+                key={g.value}
+                variant={g.value === 1 ? 'outline-danger' : 'outline-primary'}
+                title={g.hint}
+                disabled={busy}
+                onClick={() => grade(g.value)}
+              >
+                <BiLabel id={`grade.${g.value}`}>{g.label}</BiLabel>
+              </Button>
+            ))}
+          </div>
+
           {!revealed ? (
-            <>
-              <p className="mt-3">Do you remember what it means?</p>
-              <Button onClick={() => setRevealed(true)}>Show answer</Button>
-            </>
+            <Button variant="link" className="px-0 mt-2" onClick={() => setRevealed(true)}>
+              <BiLabel id="review.showAnswer">Show answer</BiLabel>
+            </Button>
           ) : (
-            <>
-              <p className="lead mt-3">{firstDefinition(word) ?? 'No definitions available.'}</p>
-              <details className="mb-3">
-                <summary>All meanings</summary>
+            <div className="mt-3" data-testid="review-answer">
+              <p className="lead mb-1">
+                {firstDefinition(word) ?? (
+                  <>
+                    No definitions available.
+                    <HelpLine id="review.noDefinition" />
+                  </>
+                )}
+              </p>
+              <SpanishHelp
+                key={word.word}
+                text={firstDefinition(word) ? `${word.word}: ${firstDefinition(word)}` : word.word}
+                term={word.word}
+              />
+              <details>
+                <summary>
+                  <BiLabel id="review.allMeanings">All meanings</BiLabel>
+                </summary>
                 <WordDetails word={word} showHeader={false} />
               </details>
-              <p className="mb-2">How well did you remember it?</p>
-              <div className="d-flex flex-wrap gap-2" role="group" aria-label="Rate your answer">
-                {GRADES.map((g) => (
-                  <Button
-                    key={g.value}
-                    variant={g.value === 1 ? 'outline-danger' : 'outline-primary'}
-                    title={g.hint}
-                    disabled={busy}
-                    onClick={() => grade(g.value)}
-                  >
-                    {g.label}
-                  </Button>
-                ))}
-              </div>
-            </>
+            </div>
           )}
         </Card.Body>
       </Card>

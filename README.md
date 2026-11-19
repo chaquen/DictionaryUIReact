@@ -6,13 +6,24 @@ Diccionario de inglés: busca palabras, escucha su pronunciación y guarda tu pr
 
 **App publicada:** https://dictionary-ui-react.vercel.app
 
-- **Home**: palabras para repasar hoy, racha, XP, nivel y logros.
+- **Home**: cobertura de inglés cotidiano, palabras nuevas de hoy, palabras para repasar, racha, XP, nivel y logros.
+- **Learn**: ruta de vocabulario esencial. Una prueba de nivel corta y luego, cada día, las palabras más útiles que aún no
+  conoces (lista [NGSL 1.2](https://www.newgeneralservicelist.com), CC BY-SA 4.0), con definición en inglés simple, imagen, audio y
+  ayuda opcional en español. "Learn it" la lleva al repaso; "I know it" la descarta.
 - **Review**: repaso espaciado. Recuerdas el significado, lo revelas y te calificas (Again, Hard, Good, Easy);
   el algoritmo (FSRS-6 por defecto, o cajas de Leitner) decide cuándo volver a preguntarte cada palabra.
 - **Search**: definiciones agrupadas por categoría gramatical, ejemplos de uso, sinónimos y antónimos.
 - **My words**: colección personal guardada en el navegador (sobrevive a recargas). Guardar una palabra la agrega al repaso.
-- **Lab**: activa o desactiva cada idea del MVP, elige el algoritmo de repaso, consulta las métricas de aprendizaje y
-  expórtalas como JSON. Los datos nunca salen del navegador.
+- **Lab**: activa o desactiva cada idea del MVP, elige el algoritmo de repaso y las palabras nuevas por día, consulta las
+  métricas de aprendizaje y expórtalas como JSON. Los datos nunca salen del navegador.
+- **Ayuda bilingüe**: la interfaz está en inglés y cada instrucción y botón muestra una ayuda en español ("Learn it · La aprendo").
+  Se cambia o se apaga en el Lab; los textos están en `src/i18n/help.es.js` y otro idioma es un archivo más.
+- **Traducción**: "Show in Spanish" traduce la palabra y su definición en el dispositivo con la Translator API de Chrome
+  (solo Chrome de escritorio).
+- **Imágenes**: pictogramas de [ARASAAC](https://arasaac.org) (autor Sergio Palao, Gobierno de Aragón, CC BY-NC-SA),
+  hechos para aprender vocabulario; para verbos se elige el sentido verbal. Las palabras sin pictograma muestran solo el
+  ejemplo de uso resaltado. Los adaptadores de fotos (Wikipedia, Wikidata, Openverse) y el filtro con la IA local de
+  Chrome siguen en `src/repositories/` por si se quieren volver a usar desde la raíz de composición.
 - **Pronunciación**: grabaciones de voz humana de [Wikimedia Commons](https://commons.wikimedia.org) (acento EE. UU., luego Reino Unido y Australia).
   Si una palabra no tiene grabación, o para leer definiciones, usa la mejor voz sintética instalada
   (prioriza voces "Natural", "Google", "Premium" o "Enhanced" y descarta las voces de broma de macOS).
@@ -70,16 +81,21 @@ src/
 │   ├── learningEvent.js            Eventos de aprendizaje: fuente de métricas y gamificación
 │   ├── scheduling/                 Patrón Strategy: FSRS-6 y Leitner (+ sombra de FSRS-6 para evaluarlo)
 │   ├── gamification.js             XP, niveles, racha y logros calculados desde los eventos
+│   ├── learningPath.js             Ruta de vocabulario: prueba de nivel, palabras de hoy y cobertura
 │   └── metrics.js                  Métricas por idea y calidad del repaso
+├── data/ngsl/                      NGSL 1.2 en JSON (CC BY-SA 4.0, ver ATTRIBUTION.md; se genera con scripts/build_ngsl.py)
 ├── repositories/
 │   ├── contracts.js                Contratos: WordLookupRepository, PronunciationRepository, SavedWordsRepository
 │   ├── index.js                    Raíz de composición: elige las implementaciones
 │   ├── freeDictionary/             Adaptador de Free Dictionary API (+ mapper y fixtures reales)
 │   ├── wikimediaCommons/           Adaptador de grabaciones humanas (PronunciationRepository)
+│   ├── images/                     ImageRepository: ARASAAC (en uso); Wikimedia, Openverse y su compuesto (alternativas)
+│   ├── translation/                Translator API de Chrome (TranslationRepository)
 │   ├── decorators/withPronunciation.js  Enriquece cualquier diccionario con esas grabaciones
 │   └── savedWords/                 Adaptador de localStorage para la colección
 ├── context/                        RepositoryProvider + LearningProvider (eventos, preferencias, tarjetas)
-├── hooks/                          useWordLookup, useSavedWords, useSpeech
+├── i18n/                           Ayuda bilingüe: catálogo help.es.js, <Bi>, <BiLabel> y <HelpLine>
+├── hooks/                          useWordLookup, useSavedWords, useSpeech, useWordImages
 └── components/                     UI: solo conoce el modelo de dominio
 ```
 

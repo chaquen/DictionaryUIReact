@@ -1,5 +1,6 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { BiLabel } from '../i18n/Help';
 import PronounceButton from './PronounceButton';
 import WordDetails from './WordDetails';
 
@@ -16,11 +17,11 @@ export default function WordDetailsModal({ word, onClose }) {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <WordDetails word={word} showHeader={false} />
+            <WordDetails word={word} showHeader={false} showImage />
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={onClose}>
-              Close
+              <BiLabel id="word.close">Close</BiLabel>
             </Button>
           </Modal.Footer>
         </>
