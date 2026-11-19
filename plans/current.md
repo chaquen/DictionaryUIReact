@@ -507,6 +507,7 @@ actualiza XP, racha y logros → el Lab lee eventos y tarjetas con `summarizeByI
   responden 200; cargar `/lab` y recargar `/review` directamente renderizan la app sin recursos con error.
 
 ### Incremento 2 — Ruta de vocabulario, ayuda en español, pronunciación, reto diario e imágenes (PR 2)
+> Primera parte publicada: PR #6 (merge `454f126`, 2026-11-19), verificada en producción. Pendiente: T-013 a T-016.
 - [x] [T-027] [US-010] Datos NGSL 1.2 en JSON con atribución y licencia — `src/data/ngsl/`
   Done cuando: el JSON tiene 2809 palabras con rango, frecuencia, categoría y definición, y `ATTRIBUTION.md` cita la fuente.
 - [x] [T-028] [P] [US-010] [US-011] `VocabularyListRepository` (NGSL) + `LearningPathRepository` + dominio `learningPath.js` — `src/repositories/vocabulary/`, `src/repositories/learningPath/`, `src/domain/learningPath.js`
@@ -521,10 +522,23 @@ actualiza XP, racha y logros → el Lab lee eventos y tarjetas con `summarizeByI
   nunca responde: tras 5 s se muestra "Translation is not available" y la ruta sigue funcionando. **Falta probar la
   traducción real en Chrome 157 del humano** (tras publicar). Verificado por el humano en Chrome 157 con el servidor
   local (2026-11-19): descarga el modelo y traduce.
-- [ ] [T-013] `useCapabilities` (micrófono, reconocimiento de voz, IA local) — `src/hooks/useCapabilities.js`
+- [x] [T-013] `useCapabilities` (micrófono, reconocimiento de voz, IA local) — `src/hooks/useCapabilities.js`
   Done cuando: las ideas sin capacidad se ocultan o muestran un aviso (test con capacidades falsas).
-- [ ] [T-014] [US-004] `useSpeechRecognition` (modo local si existe) y práctica de pronunciación — `src/hooks/`, `src/components/pronunciation/`
+- [x] [T-014] [US-004] `useSpeechRecognition` (modo local si existe) y práctica de pronunciación — `src/hooks/`, `src/components/pronunciation/`
   Done cuando: con un `SpeechRecognition` falso, acertar y fallar dan la respuesta correcta y registran eventos.
+  Evidencia: botón "Say it" en Learn, Repaso y detalle de la palabra (no se creó `/practice`: un clic menos y todavía no
+  tiene otro contenido). Reconocimiento en el equipo (`processLocally`) cuando existe; si el paquete se puede descargar,
+  el primer clic llama a `install()`; si solo existe el servicio de Google, se avisa en pantalla. Sin `phrases` a
+  propósito: sesgar hacia la palabra la haría "oír" aunque se pronuncie mal. Acierto = la mejor interpretación
+  contiene la palabra completa ("sand" ≠ "stand"); cambiado por decisión del humano: solo cuenta la mejor
+  interpretación (antes decía "Well said! I heard 'home'" cuando "whole" estaba en tercer lugar). Evento `pronunciation_attempt` (2 XP + 3 si acierta, cuenta para la
+  racha) e idea #2 en el Lab. Tarjeta "This device" en el Lab (T-013). 183 tests en verde. En el Chrome 157 del humano
+  el reconocimiento local figura como descargable, pero `install()` devuelve `false` (con "en-US" y "en"): ahora, si la
+  descarga falla, la app lo avisa y usa el servicio de Google solo cuando el usuario vuelve a pulsar (consentimiento
+  explícito); la falla se recuerda 24 h para no volver a preguntar en cada palabra (el humano veía el aviso "algunas
+  veces": en el primer clic de cada palabra nueva). Validado sin hablar (el humano estaba fuera): el botón aparece en su Chrome y la detección de modo es
+  correcta; pasar una grabación como pista de audio en vez del micrófono no funcionó, así que **falta probarlo hablando**.
+  184 tests en verde.
 - [ ] [T-015] [P] [US-005] Dominio del reto diario + lista propia de palabras + `DailyChallengeRepository` — `src/domain/dailyChallenge.js`, `src/data/`, `src/repositories/dailyChallenge/`
   Done cuando: la palabra del día es determinista y las pistas avanzan con cada intento fallido.
 - [ ] [T-016] [US-005] Pantalla `/daily` con resultado para compartir sin revelar la palabra — `src/components/daily/`
@@ -660,6 +674,9 @@ MVP mínimo: T-001 a T-012 (incremento 1): repaso espaciado, gamificación y med
 | La ayuda dentro de botones y enlaces va con `aria-hidden`; la de títulos e instrucciones, como elemento hermano | Ayuda dentro del mismo elemento | Los controles conservan su nombre accesible en inglés y los tests existentes siguen valiendo |
 | Los verbos muestran la misma imagen que se encuentre, aunque sea del sustantivo | Ocultarla y dejar solo el ejemplo (probado y revertido) | Decisión del humano: la imagen ya existe y ocultarla le quita un recurso |
 | Verbos: Openverse busca la acción ("person standing") y va primero; Wikimedia después | Mismo orden que sustantivos; ocultar Wikimedia | La búsqueda por palabra trae el sustantivo ("stand" → puestos de venta); el humano pidió no quitar recursos |
+| Ayudas de pronunciación para hispanohablantes, en el equipo y por reglas: pronunciación a la española desde el IPA ("ken-TROUL", /æ/ como "(a/e)"), consejo para cada sonido difícil (toque sobre el sonido), escuchar lento (0,7×), y al fallar: pronunciación de lo que se oyó y el primer sonido distinto ("Say /l/ instead of /m/ at the end"), más tu voz grabada para compararla con la nativa (solo en memoria, no se guarda ni se envía) | Solo el IPA | Decisión del humano: el IPA solo no le ayudaba a pronunciar y el reconocedor a veces oye otra palabra |
+| El repaso se actualiza justo cuando vence la siguiente palabra y dice el próximo repaso en forma relativa ("in 1 minute", "today, 4:17 PM"), con formato propio en cada idioma; ignora tarjetas de palabras borradas | Revisar cada 30 s y fecha absoluta con el idioma del navegador | El humano vio "All caught up" con el próximo repaso a la hora actual y la fecha en español dentro del texto en inglés |
+| En el repaso, calificarse exige decir la palabra antes ("Say it"), salvo que el navegador no reconozca voz, la idea #2 esté apagada o el micrófono esté bloqueado o no exista | Botones de calificación siempre libres | Decisión del humano: podía calificarse sin practicar la pronunciación |
 | Cobertura como "meta de lectura" (X / 95 palabras de cada 100), con una frase de ejemplo con huecos para las palabras aún no conocidas y una nota de por qué sube rápido al principio | "Your words cover X % of everyday English text" | El humano no entendía el dato: las 100 palabras más frecuentes (supuesto S7) ya cubren el 55 % de un texto, pero cubrir no es entender; leer con comodidad exige ~95 % |
 | Repaso: los botones de calificación se ven desde el inicio; "Show answer" queda como enlace opcional | Paso obligatorio "Show answer" antes de calificar | Pedido del humano: era un clic inútil; la respuesta sigue a un clic para quien quiera comprobar antes de calificarse |
 | Pictogramas ARASAAC en lugar de fotos; sin pictograma, solo el ejemplo | Pictograma + fotos filtradas; curar a mano las 2809 palabras | Decisión del humano (P14): las fotos por palabra clave seguían mostrando otros significados |

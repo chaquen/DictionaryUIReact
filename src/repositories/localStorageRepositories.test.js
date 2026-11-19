@@ -67,7 +67,7 @@ describe('LocalStoragePreferencesRepository', () => {
   it('enables every idea and uses FSRS-6 by default', async () => {
     const repo = createLocalStoragePreferencesRepository({ storage: createMemoryStorage() });
     expect(await repo.get()).toEqual({
-      flags: { learn: true, review: true, gamification: true, images: true, translation: true },
+      flags: { learn: true, review: true, gamification: true, pronunciation: true, images: true, translation: true },
       schedulingStrategy: 'fsrs6',
       newWordsPerDay: 10,
       helpLanguage: null,

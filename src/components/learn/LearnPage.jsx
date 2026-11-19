@@ -15,6 +15,8 @@ import { Bi, BiLabel, HelpLine } from '../../i18n/Help';
 import SpanishHelp from '../common/SpanishHelp';
 import WordImage from '../common/WordImage';
 import PronounceButton from '../PronounceButton';
+import PhoneticHelp from '../pronunciation/PhoneticHelp';
+import SayItButton from '../pronunciation/SayItButton';
 import WordDetails from '../WordDetails';
 import CoverageMeter from './CoverageMeter';
 import PlacementTest from './PlacementTest';
@@ -99,7 +101,8 @@ function NewWordCard({ entry, upcoming = [], onLearn, onKnow }) {
             </BiLabel>
           </Badge>
         </div>
-        {found?.phonetic && <p className="text-muted ms-4 mb-2">{found.phonetic}</p>}
+        <PhoneticHelp term={entry.term} ipa={found?.phonetic} audioUrl={found?.audioUrl ?? null} />
+        <SayItButton term={entry.term} phonetic={found?.phonetic ?? null} audioUrl={found?.audioUrl ?? null} source="learn" />
         <div className="d-flex flex-column flex-sm-row align-items-start gap-3 mt-2 mb-2">
           <WordImage
             term={entry.term}

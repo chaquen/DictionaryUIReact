@@ -122,7 +122,13 @@ export function LearningProvider({ clock: clockProp, children }) {
         const allowed = terms ? new Set(terms.map(normalizeTerm)) : null;
         return dueCards(cards, clock()).filter((c) => !allowed || allowed.has(normalizeTerm(c.term)));
       },
-      nextDue: () => nextDueDate(cards, clock()),
+      nextDue: (terms) => {
+        const allowed = terms ? new Set(terms.map(normalizeTerm)) : null;
+        return nextDueDate(
+          cards.filter((c) => !allowed || allowed.has(normalizeTerm(c.term))),
+          clock(),
+        );
+      },
       progress: computeProgress(events, now),
       now: clock,
     };

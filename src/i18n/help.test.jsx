@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { ACHIEVEMENTS } from '../domain/gamification';
 import { IDEAS } from '../domain/ideas';
+import { SOUND_TIPS } from '../domain/phonetics';
 import { GRADES, STRATEGIES } from '../domain/scheduling';
 import { Bi, BiLabel, HelpLanguageProvider } from './Help';
 import es from './help.es.js';
@@ -35,6 +36,16 @@ describe('Spanish help catalog (FR-017)', () => {
       'translate.failed',
       'lab.exported',
       'lab.exportFailed',
+      'say.error.mic',
+      'say.error.noMic',
+      'say.error.silence',
+      'say.error.network',
+      'say.error.install',
+      'say.error.generic',
+      'say.diff.change',
+      'say.diff.missing',
+      'say.diff.extra',
+      ...Object.values(SOUND_TIPS).map((t) => `sound.${t.id}`),
     ];
     expect(dynamic.filter((k) => !(k in es))).toEqual([]);
   });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
@@ -7,13 +7,18 @@ import { Link } from 'react-router-dom';
 import { firstDefinition, normalizeTerm } from '../../domain/word';
 import { GRADES, getStrategy } from '../../domain/scheduling';
 import { useLearning } from '../../context/LearningContext';
-import { Bi, BiLabel, HelpLine } from '../../i18n/Help';
+import { Bi, BiLabel, HelpLine, useHelp } from '../../i18n/Help';
+import { helpLanguage } from '../../i18n/languages';
+import { whenText } from '../../utils/relativeTime';
 import SpanishHelp from '../common/SpanishHelp';
 import PronounceButton from '../PronounceButton';
+import PhoneticHelp from '../pronunciation/PhoneticHelp';
+import SayItButton from '../pronunciation/SayItButton';
 import WordDetails from '../WordDetails';
 
-const formatDate = (date) =>
-  date.toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+/** Attempts that end like this unlock grading: the user cannot speak to the app. */
+const CANNOT_SPEAK = new Set(['not-allowed', 'service-not-allowed', 'audio-capture']);
+
 
 /** Spaced-repetition review (#1): recall the meaning, reveal it, grade yourself. */
 export default function ReviewPage({ savedWords }) {
@@ -21,15 +26,32 @@ export default function ReviewPage({ savedWords }) {
   const [revealed, setRevealed] = useState(false);
   const [session, setSession] = useState({ reviewed: 0, correct: 0 });
   const [busy, setBusy] = useState(false);
-  // Re-check every 30 s so words that become due (e.g. 1 minute after "Again") show up.
-  const [, setTick] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 30_000);
-    return () => clearInterval(id);
+  // Grading is unlocked by saying the word (#2), unless speech cannot be used here.
+  const [speechAvailable, setSpeechAvailable] = useState(false);
+  const [said, setSaid] = useState(false);
+  const onSpeechAvailable = useCallback((available) => setSpeechAvailable(available), []);
+  const onAttempt = useCallback((attempt) => {
+    if ('correct' in attempt || CANNOT_SPEAK.has(attempt.error)) setSaid(true);
   }, []);
-
+  const locked = speechAvailable && !said;
+  const { lang } = useHelp();
+  const helpLocale = helpLanguage(lang)?.code ?? 'en-US';
   const terms = savedWords.words.map((w) => w.word);
   const due = learning.dueCardsNow(terms);
+  const next = due.length === 0 ? learning.nextDue(terms) : null;
+
+  // Re-render every 30 s (for the relative time) and right when the next word becomes due (e.g. 1 minute after "Again").
+  const [, setTick] = useState(0);
+  const nextAt = next?.getTime() ?? null;
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 30_000);
+    const wait = nextAt === null ? null : Math.max(0, nextAt - learning.now().getTime()) + 250;
+    const timer = wait === null || wait > 2 ** 31 - 1 ? null : setTimeout(() => setTick((t) => t + 1), wait);
+    return () => {
+      clearInterval(id);
+      if (timer) clearTimeout(timer);
+    };
+  }, [nextAt, learning]);
   const card = due[0];
   const word = card && savedWords.words.find((w) => normalizeTerm(w.word) === normalizeTerm(card.term));
 
@@ -38,6 +60,7 @@ export default function ReviewPage({ savedWords }) {
     await learning.rate(card.term, value);
     setSession((s) => ({ reviewed: s.reviewed + 1, correct: s.correct + (value > 1 ? 1 : 0) }));
     setRevealed(false);
+    setSaid(false);
     setBusy(false);
   }
 
@@ -51,7 +74,7 @@ export default function ReviewPage({ savedWords }) {
   }
 
   if (!card || !word) {
-    const next = learning.nextDue();
+    const now = learning.now();
     return (
       <section aria-label="Review">
         <Alert variant="success">
@@ -64,8 +87,8 @@ export default function ReviewPage({ savedWords }) {
             </Bi>
           )}
           {next ? (
-            <Bi id="review.next" vars={{ date: formatDate(next) }} className="mb-0" helpClassName="mb-0">
-              Next review: {formatDate(next)}
+            <Bi id="review.next" vars={{ date: whenText(next, now, helpLocale) }} className="mb-0" helpClassName="mb-0">
+              Next review: {whenText(next, now, 'en-US')}
             </Bi>
           ) : (
             <Bi id="review.noneScheduled" className="mb-0" helpClassName="mb-0">
@@ -99,18 +122,32 @@ export default function ReviewPage({ savedWords }) {
             <PronounceButton text={word.word} audioUrl={word.audioUrl} size={24} />
             {word.word}
           </h2>
-          {word.phonetic && <p className="text-muted ms-4">{word.phonetic}</p>}
+          <PhoneticHelp term={word.word} ipa={word.phonetic} audioUrl={word.audioUrl} />
+          <SayItButton
+            key={word.word}
+            term={word.word}
+            phonetic={word.phonetic}
+            audioUrl={word.audioUrl}
+            source="review"
+            onAvailable={onSpeechAvailable}
+            onAttempt={onAttempt}
+          />
 
           <Bi id="review.question" className="mt-3 mb-0">
             Do you remember what it means? Rate yourself, or check the answer first.
           </Bi>
+          {locked && (
+            <Bi id="review.sayFirst" className="small text-muted mb-1">
+              Say the word first to rate yourself.
+            </Bi>
+          )}
           <div className="d-flex flex-wrap gap-2" role="group" aria-label="Rate your answer">
             {GRADES.map((g) => (
               <Button
                 key={g.value}
                 variant={g.value === 1 ? 'outline-danger' : 'outline-primary'}
                 title={g.hint}
-                disabled={busy}
+                disabled={busy || locked}
                 onClick={() => grade(g.value)}
               >
                 <BiLabel id={`grade.${g.value}`}>{g.label}</BiLabel>

@@ -39,24 +39,26 @@ export function pickBestVoice(voices) {
 
 const failedAudio = new Set();
 
-function playRecording(url) {
+function playRecording(url, rate = 1) {
   if (!url || failedAudio.has(url) || typeof globalThis.Audio !== 'function') {
     return Promise.reject(new Error('No playable recording'));
   }
-  return new globalThis.Audio(url).play().catch((error) => {
+  const audio = new globalThis.Audio(url);
+  audio.playbackRate = rate; // Keeps the pitch: slower, not deeper.
+  return audio.play().catch((error) => {
     // Remember broken URLs so later clicks go straight to the fallback.
     if (error?.name !== 'NotAllowedError') failedAudio.add(url);
     throw error;
   });
 }
 
-function speakWithSynthesis(text) {
+function speakWithSynthesis(text, rate = 1) {
   const synth = globalThis.speechSynthesis;
   if (!synth || typeof globalThis.SpeechSynthesisUtterance !== 'function') return false;
   synth.cancel();
   const utterance = new globalThis.SpeechSynthesisUtterance(text);
   utterance.lang = LANG;
-  utterance.rate = RATE;
+  utterance.rate = RATE * rate;
   const voice = pickBestVoice(synth.getVoices());
   if (voice) utterance.voice = voice;
   synth.speak(utterance);
@@ -74,15 +76,15 @@ export function useSpeech() {
     globalThis.speechSynthesis?.getVoices();
   }, []);
 
-  return useCallback(async ({ text, audioUrl = null }) => {
+  return useCallback(async ({ text, audioUrl = null, rate = 1 }) => {
     if (audioUrl) {
       try {
-        await playRecording(audioUrl);
+        await playRecording(audioUrl, rate);
         return 'recording';
       } catch {
         // Fall through to synthesis.
       }
     }
-    return speakWithSynthesis(text) ? 'synthesis' : 'unsupported';
+    return speakWithSynthesis(text, rate) ? 'synthesis' : 'unsupported';
   }, []);
 }
